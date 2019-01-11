@@ -68,8 +68,8 @@ setup_args = dict(
     author          = 'alexsocha',
     author_email    = 'algorithmx.lib@gmail.com',
     url             = 'https://github.com/algorithmx/algorithmx-python',
-    license         = 'BSD',
-    platforms       = "Linux, Mac OS X, Windows",
+    license         = 'MIT',
+    platforms       = ['Linux', 'MacOS', 'Windows'],
     keywords        = ['Jupyter', 'Widgets', 'IPython'],
     classifiers     = [
         'Intended Audience :: Developers',
