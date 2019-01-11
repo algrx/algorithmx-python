@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="https://raw.githubusercontent.com/algrx/algorithmx/master/img/logo.svg?sanitize=true" type="image/svg+xml">
+
+    <title>AlgorithmX</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://unpkg.com/webcola@^3.0.0/WebCola/cola.min.js"></script>
+    <script src="https://unpkg.com/algorithmx@latest"></script>
+
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
+
+    <style>
+      html {
+        height: 100%;
+      }
+      body {
+        height: 100%;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header {
+        height: 50px;
+        min-height: 50px;
+        background-color: rgb(50,50,50);
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-left: 30px;
+        padding-right: 30px;
+      }
+      .title {
+        display: flex;
+        align-items: center;
+      }
+      .title-logo {
+        display: flex;
+        width: 20px;
+        height: 20px;
+        padding-right: 10px;
+        fill: white;
+      }
+      .title-text {
+        color: white;
+        font-weight: 300;
+        font-size: 20px;
+        font-family: "Open Sans", sans-serif;
+      }
+      .github-logo {
+        color: white;
+        font-size: 20px;
+        text-decoration: none;
+      }
+
+      .output {
+        flex: auto;
+        display: flex;
+        background-color: white;
+        backface-visibility: hidden;
+      }
+
+      .footer {
+        height: 40px;
+        background-color: rgb(50,50,50);
+        padding-left: 30px;
+        padding-right: 30px;
+        display: flex;
+        align-items: center;
+      }
+      .button {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin-right: 20px;
+        cursor: pointer;
+      }
+      .button-icon {
+        width: 30px;
+        font-size: 15px;
+        color: white;
+      }
+    </style>
+  </head>
+
+  <body onresize="resize()">
+    <div class="header">
+      <div class="title">
+        <img class="title-logo" src="https://raw.githubusercontent.com/algrx/algorithmx/master/img/logo_white.svg?sanitize=true">
+        <p class="title-text">AlgorithmX</p>
+      </div>
+      <a class="fab fa-github github-logo" href="https://github.com/algrx/algorithmx"></a>
+    </div>
+    <div class="output" id="output"></div>
+    <div class="footer">
+      <div class="button" onclick="clickPlay();">
+        <i class="fas fa-play button-icon" id="button-play"></i>
+      </div>
+      <div class="button" onclick="clickReset();">
+        <i class="fas fa-redo-alt button-icon" id="button-reset"></i>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    // main client, used for event handling
+    let client = algorithmx.client('output');
+    // main canvas interface
+    let canvas = client.canvas();
+
+    // whether the simulation is running
+    let running = false;
+    // whether the simulation has been stopped
+    let stopped = true;
+
+    function dispatch(eventStr) {
+      // receive messages from the server and send them to the client
+      const event = JSON.parse(eventStr);
+      if (event.canvas === 'output') client.dispatch(event.data)
+    }
+
+    // open the websocket
+    let socket = initSocket(function() {}, dispatch);
+
+    client.subscribe(function(event) {
+      // send messages to the server through the websocket
+      socket.send(JSON.stringify({ canvas: 'output', data: event }))
+    });
+
+    function start() {
+      // immediately resume all event queues
+      canvas.eventQ(null).startall();
+
+      if (running === false) {
+        // trigger start
+        canvas.broadcast('start');
+        running = true;
+      }
+      stopped = false;
+    }
+
+    function stop() {
+      // immediately stop all event queues
+      canvas.eventQ(null).stopall();
+      stopped = true;
+    }
+
+    function restart() {
+      // immediately cancel all scheduled events on all event queues
+      canvas.eventQ(null).cancelall();
+
+      canvas.eventQ(null).start(); // make sure that the main queue is running
+      canvas.duration(0.1).remove(); // clear graphics
+
+      if (stopped) {
+        // if the simulation was stopped, wait for the start button to be pressed again
+        canvas.stopall();
+        running = false;
+      } else {
+        // if the simulation was running, immediately send a start message
+        canvas.broadcast('start');
+        canvas.stopall();
+        // allow time for remove animation
+        setTimeout(() => canvas.eventQ(null).startall(), 100);
+        running = true;
+      }
+    }
+
+    function clickPlay() {
+      if (stopped) {
+        d3.select('#button-play').attr('class', 'fas fa-pause button-icon');
+        start();
+      } else {
+        d3.select('#button-play').attr('class', 'fas fa-play button-icon');
+        stop();
+      }
+    }
+
+    function clickReset() {
+      // rotating animation
+      d3.select('#button-reset').transition().duration(400).styleTween('transform', function rotateTween() {
+        var i = d3.interpolate(0, 360);
+        return function(t) { return "rotate(" + i(t) + "deg)"; };
+      })
+
+      // attempt to reconnect the socket if the server has restarted
+      if (socket.readyState !== socket.OPEN)
+        socket = initSocket(function (socket) { restart(); }, dispatch)
+      else restart();
+    }
+
+    function resize() {
+      const width = document.getElementById('output').clientWidth
+      const height = document.getElementById('output').clientHeight
+      // immediately resize the canvas
+      canvas.eventQ(null).size([width, height])
+    }
+
+    function initSocket(onOpen, onMessage) {
+      // open socket on next port
+      const socket = new WebSocket('ws://localhost:' + (parseInt(location.port) + 1));
+
+      socket.onopen = function () {
+        if (onOpen) onOpen(socket);
+      }
+      socket.onmessage = function (event) {
+        if (onMessage) onMessage(event.data);
+      }
+      return socket;
+    }
+  </script>
+</html>

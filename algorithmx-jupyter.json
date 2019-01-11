@@ -1,0 +1,5 @@
+{
+  "load_extensions": {
+    "algorithmx-jupyter/extension": true
+  }
+}
