@@ -5,7 +5,7 @@ def http_server(file: str = None, port: int = 5050) -> Server:
     """
     Creates a new HTTP server for displaying the network, using WebSockets to transmit data. The server will only start
     once its :meth:`~server.Server.start` method is called. After the server has started, the network can be viewed by
-    opening a browser and navigating to the address 'http://localhost:5050/' (change the port as necessary).
+    opening a browser and navigating to the address ``http://localhost:5050/`` (change the port as necessary).
 
     :file: (Optional) The path to the HTML file which the server should display, relative to the current runtime directory.
         If unspecified, the default HTML file will be used. When creating a custom HTML interface, use the default file
