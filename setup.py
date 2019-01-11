@@ -21,6 +21,10 @@ from setuptools import setup
 # The name of the project
 name = 'algorithmx'
 
+# Load description
+with open('README.md', 'r') as fh:
+  long_description = fh.read()
+
 # Ensure a valid python version
 ensure_python('>=3.6')
 
@@ -59,19 +63,21 @@ cmdclass['jsdeps'] = combine_commands(
 )
 
 setup_args = dict(
-    name            = name,
-    description     = 'A library for network visualization and algorithm simulation.',
-    version         = version,
-    scripts         = glob(pjoin('scripts', '*')),
-    cmdclass        = cmdclass,
-    packages        = find_packages(),
-    author          = 'Alex Socha',
-    author_email    = 'algorithmx.lib@gmail.com',
-    url             = 'https://github.com/algorithmx/algorithmx-python',
-    license         = 'MIT',
-    platforms       = ['Linux', 'MacOS', 'Windows'],
-    keywords        = ['Jupyter', 'Widgets', 'IPython'],
-    classifiers     = [
+    name = name,
+    description = 'A library for network visualization and algorithm simulation.',
+    version = version,
+    scripts = glob(pjoin('scripts', '*')),
+    cmdclass = cmdclass,
+    packages = find_packages(),
+    author = 'Alex Socha',
+    author_email = 'algorithmx.lib@gmail.com',
+    long_description = long_description,
+    long_description_content_type = 'text/markdown',
+    url = 'https://github.com/algrx/algorithmx-python',
+    license = 'MIT',
+    platforms = ['Linux', 'MacOS', 'Windows'],
+    keywords = ['Jupyter', 'Widgets', 'IPython'],
+    classifiers = [
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: BSD License',
