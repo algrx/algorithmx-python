@@ -3,20 +3,7 @@ algorithmx
 
 Version: |release|
 
-A Custom Jupyter Widget Library
-
-
-Quickstart
-----------
-
-To get started with algorithmx, install with pip::
-
-    pip install algorithmx
-
-or with conda::
-
-    conda install algorithmx
-
+A library for network visualization and algorithm simulation.
 
 Contents
 --------
