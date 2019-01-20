@@ -1,13 +1,6 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# Copyright (c) Jupyter Development Team.
-# Distributed under the terms of the Modified BSD License.
-
 from __future__ import print_function
 from glob import glob
 from os.path import join as pjoin
-
 
 from setupbase import (
     create_cmdclass, install_npm, ensure_targets,
@@ -17,24 +10,23 @@ from setupbase import (
 
 from setuptools import setup
 
-
-# The name of the project
+# the name of the project
 name = 'algorithmx'
 
-# Load description
+# load description
 with open('README.md', 'r') as fh:
-  long_description = fh.read()
+    long_description = fh.read()
 
-# Ensure a valid python version
+# ensure a valid python version
 ensure_python('>=3.6')
 
-# Get our version
+# get our version
 version = get_version(pjoin(name, '_version.py'))
 
 nb_path = pjoin(HERE, name, 'nbextension', 'static')
 lab_path = pjoin(HERE, name, 'labextension')
 
-# Representative files that should exist after a successful build
+# representative files that should exist after a successful build
 jstargets = [
     pjoin(nb_path, 'index.js'),
     pjoin(HERE, 'lib', 'plugin.js'),
@@ -43,17 +35,16 @@ jstargets = [
 package_data_spec = {
     name: [
         'nbextension/static/*.*js*',
-        'labextension/*.tgz'
+        'labextension/*.tgz',
+        'server/*.html'
     ]
 }
 
 data_files_spec = [
-    ('share/jupyter/nbextensions/algorithmx-jupyter',
-        nb_path, '*.js*'),
+    ('share/jupyter/nbextensions/algorithmx-jupyter', nb_path, '*.js*'),
     ('share/jupyter/lab/extensions', lab_path, '*.tgz'),
-    ('etc/jupyter/nbconfig/notebook.d' , HERE, 'algorithmx-jupyter.json')
+    ('etc/jupyter/nbconfig/notebook.d', HERE, 'algorithmx-jupyter.json')
 ]
-
 
 cmdclass = create_cmdclass('jsdeps', package_data_spec=package_data_spec, data_files_spec=data_files_spec)
 
@@ -80,7 +71,7 @@ setup_args = dict(
     classifiers = [
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
