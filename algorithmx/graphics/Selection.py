@@ -27,7 +27,7 @@ class Selection:
         context.data = self._context.ids
         self._context.client.dispatch(attr_event(context, lambda _, i: i, lambda i: {
             'visible': True,
-            **(self._context.init_attr[i] if self._context.init_attr else {})
+            **(self._context.initattr[i] if self._context.initattr else {})
         }))
         return self.duration(0)
 

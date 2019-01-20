@@ -9,6 +9,9 @@ include package.json
 include webpack.config.js
 include algorithmx/labextension/*.tgz
 
+# Server HTML
+include algorithmx/server/*.html
+
 # Documentation
 graft docs
 exclude docs/\#*

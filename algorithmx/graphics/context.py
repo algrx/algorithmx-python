@@ -47,5 +47,5 @@ def create_child_context(parent: SelectionContext, name: str, ids: List[str],
     child.name = name
     child.ids = ids
     child.data = data
-    child.init_attr = initattr
+    child.initattr = initattr
     return child

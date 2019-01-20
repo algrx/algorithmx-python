@@ -84,17 +84,17 @@ class CanvasSelection(Selection):
         :return: A new selection corresponding to the given edges.
         """
         edge_ids = []
-        init_attr = []
+        initattr = []
         for edge in edges:
             ordered_nodes = [edge[0], edge[1]]
             ordered_nodes.sort()
 
             edge_ids.append('{}-{}{}'.format(ordered_nodes[0], ordered_nodes[1],
                 ('-' + str(edge[2])) if len(edge) >= 3 else ''))
-            init_attr.append({'source': str(edge[0]), 'target': str(edge[1])})
+            initattr.append({'source': str(edge[0]), 'target': str(edge[1])})
 
         edge_context = create_child_context(parent=self._context, name='edges',
-            ids=edge_ids, data=edges, initattr=init_attr)
+            ids=edge_ids, data=edges, initattr=initattr)
         return EdgeSelection(edge_context)
 
     def label(self, id: Union[str, int] = 'title') -> LabelSelection:
@@ -224,6 +224,7 @@ class CanvasSelection(Selection):
 def canvas_selection(canvas: str, handler: EventHandler) -> CanvasSelection:
     context = SelectionContext(handler)
     context.name = 'canvas'
+    context.ids = [canvas]
     context.data = [canvas]
     handler.subscribe(lambda event: receive_handler(event, context.listeners))
     return CanvasSelection(context)
