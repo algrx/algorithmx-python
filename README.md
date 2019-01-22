@@ -10,26 +10,27 @@
 
 ## Installation
 
-To install the library using pip:
+Python 3.6 or higher is required.
+
+AlgorithmX can be installed using pip:
 
 ```bash
 pip install algorithmx
 ```
 
-To enable the Jupyter widget in classic notebooks:
+or using conda:
+
+```bash
+conda install algorithmx
+```
+
+The Jupyter widget will typically be enabled by default. However, if you installed using pip with notebook version <5.3, you will have to manually enable it using:
 
 ```bash
 jupyter nbextension enable --sys-prefix --py algorithmx
 ```
 
-To enable in JupyterLab:
-
-```bash
-# if you haven't used widgets before
-jupyter labextension install @jupyter-widgets/jupyterlab-manager
-
-jupyter labextension install algorithmx-jupyter
-```
+with the <a href="https://jupyter-notebook.readthedocs.io/en/stable/extending/frontend_extensions.html#installing-and-enabling-extensions">appropriate flag</a>.
 
 ## Example Usage
 

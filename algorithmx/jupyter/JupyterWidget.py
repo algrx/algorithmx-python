@@ -46,9 +46,9 @@ class JupyterWidget(DOMWidget):
     def canvas(self) -> CanvasSelection:
         """
         Creates a new :class:`~graphics.CanvasSelection` which will dispatch and receive events through the Jupyter
-        widget.
+        widget. The default canvas size is (400, 250).
 
-        Note that by default, you need to hold down the ``ctrl``/``cmd`` key to zoom in on the canvas
+        Note that by default, you need to hold down the ``ctrl``/``cmd`` key to zoom in
         (see :meth:`~graphics.CanvasSelection.zoomkey`).
         """
         return canvas_selection('_jupyter', self)

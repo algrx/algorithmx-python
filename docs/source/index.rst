@@ -9,13 +9,13 @@ Contents
 --------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :titlesonly:
    :caption: Installation and Usage
 
    installing
    http-server
-   jupyter/jupyter-widget
+   jupyter-widget
 
 .. toctree::
    :maxdepth: 1
@@ -23,6 +23,12 @@ Contents
 
    graphics/overview
    graphics/selections
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Examples
+
+   examples/examples
 
 .. toctree::
    :maxdepth: 2

@@ -3,7 +3,7 @@ import uuid
 
 from .context import SelectionContext, create_child_context
 from .EventHandler import DispatchEventType
-from .utils import attr_event, queue_event, call_element_fn, is_iterable
+from .utils import attr_event, queue_event, update_animation, call_element_fn, is_iterable
 from .types import ElementArg, ElementFn
 
 S = TypeVar('S', bound='Selection')
@@ -93,42 +93,41 @@ class Selection:
         context.queue = str(queue)
         return self.__class__(context)
 
-    def animate(self: S, animation_type: str) -> S:
+    def animate(self: S, animation_type: ElementArg[str]) -> S:
         """
         Configures the type of animation which should be used for all attribute changes triggered by the selection.
 
-        :param type: One of the following strings:
+        :param animation_type: One of the following strings:
 
             * "normal": The standard animation, applicable in most cases.
             * "scale": Animates the size of elements being added/removed.
             * "fade": Animates the opacity of elements being added/removed.
             * "scale-face": Animates both the size and opacity of elements being added/removed.
-            * "traverse": Changes the color of edges using a traversal animation (from source to target).
-            * "traverse-reverse": Changes the color of edges using a reversed traversal animation (from target to source).
+            * "traverse": Changes the color of edges using a traversal animation.
 
-        :type animation_type: str
+        :type animation_type: :data:`~graphics.types.ElementArg`\\[str]
 
         :return: A new instance of the current selection using the specified animation type.
         """
         context = self._context.copy()
-        context.animation['type'] = animation_type
+        context.animation = update_animation(context, animation_type, lambda d: {'type': d, 'data': {}})
         return self.__class__(context)
 
-    def duration(self: S, seconds: Union[int, float]) -> S:
+    def duration(self: S, seconds: ElementArg[Union[int, float]]) -> S:
         """
-        Configures the duration of all animations triggered by the selection. A duration of 0 will ensure that changes
-        occur immediately.
+        Configures the duration of all animations triggered by the selection. A duration of ``0`` will ensure that changes
+        occur immediately. The default duration is ``0.35``.
 
         :param seconds: The animation duration, in seconds.
-        :type seconds: Union[int, float]
+        :type seconds: :data:`~graphics.types.ElementArg`\\[Union[int, float]]
 
         :return: A new instance of the current selection using the specified animation duration.
         """
         context = self._context.copy()
-        context.animation['duration'] = seconds
+        context.animation = update_animation(context, seconds, lambda d: {'duration': d})
         return self.__class__(context)
 
-    def ease(self: S, ease: str) -> S:
+    def ease(self: S, ease: ElementArg[str]) -> S:
         """
         Configures the ease function used in all animations triggered by the selection. This will affect the way attributes
         transition from one value to another. More information is available here: `<https://github.com/d3/d3-ease>`_.
@@ -146,38 +145,39 @@ class Selection:
             "back", "back-in", "back-out", "back-in-out",
             "bounce", "bounce-in", "bounce-out", "bounce-in-out".
 
-        :type ease: str
+        :type ease: :data:`~graphics.types.ElementArg`\\[str]
 
         :return: A new instance of the current selection using the specified animation ease.
         """
         context = self._context.copy()
-        context.animation['ease'] = ease
+        context.animation = update_animation(context, ease, lambda d: {'ease': d})
         return self.__class__(context)
 
-    def highlight(self: S, seconds: Optional[Union[int, float]] = None) -> S:
+    def highlight(self: S, seconds: Optional[ElementArg[Union[int, float]]] = None) -> S:
         """
         Returns a new selection through which all attribute changes are temporary. This is typically used to draw attention
         to a certain element without permanently changing its attributes.
 
         :param seconds: The amount of time attributes should remain 'highlighted', in seconds, before
-            changing back to their original values. If not provided, an appropriate default will be used.
-        :type seconds: Optional[Union[int, float]]
+            changing back to their original values. Defaults to ``0.5``.
+        :type seconds: Optional[:data:`~graphics.types.ElementArg`\\[Union[int, float]]]
 
         :return: A new instance of the current selection, where all attribute changes are temporary.
         """
         context = self._context.copy()
         context.highlight = True
         if seconds is not None:
-            context.animation['linger'] = seconds
+            context.animation = update_animation(context, seconds, lambda d: {'linger': d})
         return self.__class__(context)
 
-    def data(self: S, data: Union[Iterable[Any], ElementFn[Any]]) -> S:
+    def data(self: S, data: Union[Iterable[Any], ElementFn[Any], None]) -> S:
         """
         Binds the selection to a list of data values. This will decide the arguments provided whenever an attribute is
         configured using a function (see :data:`~graphics.types.ElementArg`).
 
         :param data: An iterable container of values to use as the data of this selection, which should have the same length as the number
             of elements in the selection. Alternatively, a function (:data:`~graphics.types.ElementFn`) transforming the selection's previous data.
+            Use ``null`` to unbind the selection from its data, in which case the selection will fall back on its parent's data.
         :type: data: Union[Iterable[Any], ElementFn[Any]]
 
         :raise Exception: If the length of the data does not equal the number of elements in the selection.

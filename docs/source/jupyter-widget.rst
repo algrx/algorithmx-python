@@ -3,7 +3,7 @@
 Jupyter Widget
 ==============
 
-After :ref:`installing and enabling <install-jupyter>` the Jupyter widget, you can use the library within a notebook in
+After :ref:`installing and enabling <install>` the Jupyter widget, you can use the library within a notebook in
 the following way:
 
 .. code-block:: python
@@ -41,10 +41,3 @@ can also enable start/stop/restart buttons:
 .. autoclass:: algorithmx.jupyter.JupyterWidget
    :members:
 
-
-Below are some example notebooks:
-
-.. toctree::
-    :glob:
-
-    *

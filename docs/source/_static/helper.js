@@ -26,7 +26,7 @@ window.addEventListener('load', function() {
   cache_require.config({
     paths: Object.assign({
       webcola: 'https://unpkg.com/webcola@^3.0.0/WebCola/cola.min',
-      algorithmx: 'https://unpkg.com/algorithmx@latest/dist/algorithmx.min'
+      algorithmx: 'https://unpkg.com/algorithmx@^1.0.0-beta.1/dist/algorithmx.min'
     }, d3Paths),
     shim: {
       algorithmx: {

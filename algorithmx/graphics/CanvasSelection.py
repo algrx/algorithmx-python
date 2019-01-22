@@ -58,7 +58,8 @@ class CanvasSelection(Selection):
 
         :return: A new selection corresponding to the given nodes.
         """
-        node_context = create_child_context(parent=self._context, name='nodes', ids=[str(k) for k in ids], data=ids)
+        node_context = create_child_context(parent=self._context, name='nodes',
+            ids=[str(k) for k in ids], data=list(ids))
         return NodeSelection(node_context)
 
     def edge(self, edge: EdgeSelector) -> None:
@@ -94,7 +95,7 @@ class CanvasSelection(Selection):
             initattr.append({'source': str(edge[0]), 'target': str(edge[1])})
 
         edge_context = create_child_context(parent=self._context, name='edges',
-            ids=edge_ids, data=edges, initattr=initattr)
+            ids=edge_ids, data=list(edges), initattr=initattr)
         return EdgeSelection(edge_context)
 
     def label(self, id: Union[str, int] = 'title') -> LabelSelection:
@@ -124,7 +125,8 @@ class CanvasSelection(Selection):
         """
         /**
         Sets the width and height of the canvas. This will determine the coordinate system, and will update the ``width`` and
-        ``height`` attributes of the main SVG element, unless otherwise specified with :meth:`~svgattr`.
+        ``height`` attributes of the main SVG element, unless otherwise specified with :meth:`~svgattr`. Note that
+        size is not animated by default.
 
         :param size: A (width, height) tuple describing the size of the canvas.
         :type size: :data:`~graphics.types.ElementArg`\\[Tuple[:data:`~graphics.types.NumExpr`, :data:`~graphics.types.NumExpr`]]

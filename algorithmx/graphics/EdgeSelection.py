@@ -1,14 +1,32 @@
-from typing import Union, Tuple, Iterable, TypeVar
+from typing import Union, Tuple, Iterable, Optional, TypeVar
 
 from .Selection import Selection
 from .LabelSelection import LabelSelection
 from .context import create_child_context
 from .types import ElementArg, NumExpr
-from .utils import attr_event
+from .utils import attr_event, update_animation
 
 S = TypeVar('S', bound='EdgeSelection')
 
 class EdgeSelection(Selection):
+    def traverse(self: S, source: Optional[ElementArg[Union[str, int]]] = None) -> S:
+        """
+        Sets the animation type to "traverse" (see :meth:`~graphics.Selection.animate`), and configures the node at which the traversal
+        should begin. This will typically be followed by :meth:`~color`.
+
+        If no source is given, the first node in each edge tuple used to construct the selection will be used.
+        If the source is not connected, the edge's actual source will be used.
+
+        :param source: The ID of the node at which the traversal animation should begin.
+        :type source: Optional[:data:`~graphics.types.ElementArg`\\[Union[str, int]]]
+        """
+        context = self._context.copy()
+        new_source = lambda e, i: self._context.initattr[i]['source'] if source is None else source
+        context.animation = update_animation(context, new_source,
+            lambda d: {'type': 'traverse', 'data': {'source': str(d)}})
+        return self.__class__(context)
+
+
     def label(self, id: Union[str, int] = 'weight') -> LabelSelection:
         """
         Selects a single label, attached to the edge, by its ID.
@@ -64,8 +82,8 @@ class EdgeSelection(Selection):
 
     def color(self: S, color: ElementArg[str]) -> S:
         """
-        Sets color of the edge. Note that this can be animated with a traversal animation ("traverse" or
-        "traverse-reverse", see :meth:`~graphics.Selection.animate`).
+        Sets color of the edge. Note that this can be animated with a traversal animation (see :meth:`~traverse`).
+        The default duration of color animations is ``0.5``, to make traversals clearer.
 
         :param color: A CSS color string.
         :type color: :data:`~graphics.types.ElementArg`\\[str]

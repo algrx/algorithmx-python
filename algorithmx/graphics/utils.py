@@ -28,15 +28,15 @@ def create_parent_attr(sel: SelectionContext, arg, attr):
     else:
         return {sel.name: {k: get_attr_entry(sel, arg, attr, i) for i, k in enumerate(sel.ids)}}
 
-def get_full_attributes(sel: SelectionContext, arg, attr):
+def create_full_attr(sel: SelectionContext, arg, attr):
     if sel.parent is None:
         return get_attr_entry(sel, arg, attr, 0)
     else:
-        return get_full_attributes(sel.parent, arg, create_parent_attr(sel, arg, attr))
+        return create_full_attr(sel.parent, arg, create_parent_attr(sel, arg, attr))
 
 
 def attr_event(sel: SelectionContext, arg, attr) -> Dict:
-    full_attr = get_full_attributes(sel, arg, attr)
+    full_attr = create_full_attr(sel, arg, attr)
 
     return {
         'type': DispatchEventType.Highlight if sel.highlight else DispatchEventType.Update,
@@ -52,3 +52,22 @@ def queue_event(sel: SelectionContext, event_type: str,
         'queue': sel.queue,
         'data': {'queues': queue_list}
     }
+
+def merge_dict_rec(a: Dict, b: Dict) -> Dict:
+    new_dict = {}
+    for k in a:
+        if not k in b:
+            new_dict[k] = a[k]
+        elif type(a[k]) is dict and type(b[k]) is dict:
+            new_dict[k] = merge_dict_rec(a[k], b[k])
+        else:
+            new_dict[k] = b[k]
+    return {**b, **new_dict}
+
+def update_animation(sel: SelectionContext, arg, attr) -> Dict:
+    if (len(sel.animation) == 0 or (len(sel.animation) == 1 and '**' in sel.animation)) and not callable(arg):
+        # optimization to minimize the amount of transmitted data
+        return merge_dict_rec(sel.animation, {'**': attr(arg)})
+    else:
+        anim_attr = create_full_attr(sel, arg, lambda a: {'**': attr(a)})
+        return merge_dict_rec(sel.animation, anim_attr)
