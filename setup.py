@@ -1,40 +1,36 @@
-from __future__ import print_function
 from glob import glob
-from os.path import join as pjoin
+from os.path import join as pjoin, exists as pexists
 
 from setupbase import (
     create_cmdclass, install_npm, ensure_targets,
     find_packages, combine_commands, ensure_python,
-    get_version, command_for_func, run, HERE
+    get_version, command_for_func, run, skip_npm, HERE
 )
-
 from setuptools import setup
 
-# the name of the project
-name = 'algorithmx'
+ensure_python('>=3.6')
 
-# load description
+name = 'algorithmx'
+version = get_version(pjoin(name, '_version.py'))
 with open('README.md', 'r') as fh:
     long_description = fh.read()
 
-# ensure a valid python version
-ensure_python('>=3.6')
-
-# get our version
-version = get_version(pjoin(name, '_version.py'))
-
+js_path = pjoin(HERE, 'js')
 nb_path = pjoin(HERE, name, 'nbextension', 'static')
 lab_path = pjoin(HERE, name, 'labextension')
 
-# representative files that should exist after a successful build
+js_exists = True
+if not pexists(js_path):
+    js_exists = False
+
 jstargets = [
     pjoin(nb_path, 'index.js'),
-    pjoin(HERE, 'lib', 'plugin.js'),
+    pjoin(nb_path, 'extension.js'),
 ]
 
 package_data_spec = {
     name: [
-        'nbextension/static/*.*js*',
+        'nbextension/static/*.js*',
         'labextension/*.tgz',
         'server/*.html'
     ]
@@ -43,14 +39,21 @@ package_data_spec = {
 data_files_spec = [
     ('share/jupyter/nbextensions/algorithmx-jupyter', nb_path, '*.js*'),
     ('share/jupyter/lab/extensions', lab_path, '*.tgz'),
-    ('etc/jupyter/nbconfig/notebook.d', HERE, 'algorithmx-jupyter.json')
+    ('etc/jupyter/nbconfig/notebook.d', HERE, 'algorithmx-jupyter -config.json')
 ]
 
-cmdclass = create_cmdclass('jsdeps', package_data_spec=package_data_spec, data_files_spec=data_files_spec)
-
-cmdclass['jsdeps'] = combine_commands(
-    install_npm(HERE, build_cmd='build:all'),
-    ensure_targets(jstargets),
+cmdclass = create_cmdclass('js' if js_exists else None,
+    package_data_spec=package_data_spec,
+    data_files_spec=data_files_spec
+)
+cmdclass['js'] = combine_commands(
+    install_npm(
+        path=js_path,
+        build_dir=nb_path,
+        source_dir=js_path,
+        build_cmd='build'
+    ),
+    ensure_targets(jstargets)
 )
 
 setup_args = dict(

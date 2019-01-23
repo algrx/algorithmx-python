@@ -1,11 +1,10 @@
-var cache_require = window.require;
+var cache_require = window.require
 
 window.addEventListener('load', function() {
-  window.require = cache_require;
+  window.require = cache_require
 
   var d3Modules = {
     'd3-color': 1,
-    'd3-drag': 1,
     'd3-dispatch': 1,
     'd3-drag': 1,
     'd3-ease': 1,
@@ -21,7 +20,7 @@ window.addEventListener('load', function() {
   var d3Paths = Object.keys(d3Modules).reduce(function (result, k) {
     result[k] = 'https://d3js.org/' + k + '.v' + d3Modules[k] + '.min'
     return result
-  }, {});
+  }, {})
 
   cache_require.config({
     paths: Object.assign({
@@ -34,5 +33,5 @@ window.addEventListener('load', function() {
         exports: 'algorithmx'
       }
     }
-  });
-});
+  })
+})

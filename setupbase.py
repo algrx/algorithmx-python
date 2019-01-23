@@ -177,10 +177,7 @@ def create_cmdclass(prerelease_cmd=None, package_data_spec=None,
     if 'bdist_egg' in sys.argv:
         egg = wrapper(bdist_egg, strict=True)
     else:
-        # ==================================================
-        # Changed to enable setup.py install for readthedocs
-        # ==================================================
-        egg = wrapper(bdist_egg, strict=True)
+        egg = bdist_egg_disabled
 
     cmdclass = dict(
         build_py=wrapper(build_py, strict=is_repo),

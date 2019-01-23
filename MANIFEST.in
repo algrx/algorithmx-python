@@ -9,31 +9,17 @@ include package.json
 include webpack.config.js
 include algorithmx/labextension/*.tgz
 
-# Server HTML
 include algorithmx/server/*.html
 
-# Documentation
-graft docs
-exclude docs/\#*
-prune docs/build
-prune docs/gh-pages
-prune docs/dist
+prune docs
+prune tests
+prune js
 
-# Examples
-graft examples
-
-# Tests
-graft tests
-prune tests/build
-
-# Javascript files
 graft algorithmx/nbextension
 graft src
 prune **/node_modules
 prune coverage
-prune lib
 
-# Patterns to exclude from any directory
 global-exclude *~
 global-exclude *.pyc
 global-exclude *.pyo
