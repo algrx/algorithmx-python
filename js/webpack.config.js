@@ -9,7 +9,7 @@ const name = require('./package.json').name
 const path = require('path')
 
 const externals = ['@jupyter-widgets/base', 'd3', 'webcola', 'algorithmx']
-const publicPath = 'https://unpkg.com/' + name + '@' + version + '/dist/'
+const publicPath = 'https://unpkg.com/' + name + '@' + version + '/dist/index.js'
 
 const options = {
   module: {

@@ -1,6 +1,6 @@
 {
   "name": "algorithmx-jupyter",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0",
   "main": "dist/index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
