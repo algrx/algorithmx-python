@@ -13,13 +13,20 @@ or using conda::
 
     conda install algorithmx
 
+.. _install-jupyter:
 
-The Jupyter widget will typically be enabled by default. However, if you installed using pip with notebook version <5.3,
-you will have to manually enable it using::
+Jupyter Widget
+--------------
+
+In classic Jupyter notebooks, the widget will typically be enabled by default. However, if you installed using pip with notebook version <5.3,
+you will have to manually enable it by running::
 
     jupyter nbextension enable --sys-prefix --py algorithmx
 
-with the `appropriate flag`_.
+with the `appropriate flag`_. To enable in JupyterLab, run::
+
+    jupyter labextension install @jupyter-widgets/jupyterlab-manager
+    jupyter labextension install algorithmx-jupyter
 
 .. links
 
