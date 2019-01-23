@@ -32,7 +32,8 @@
     "clean": "npm run clean:nbextension && npm run clean:nbextension",
     "clean:nbextension": "rimraf ../algorithmx/nbextension/static && rimraf dist/",
     "clean:labextension": "rimraf ../algorithmx/labextension && rimraf dist-lab/",
-    "watch": "webpack --watch"
+    "watch": "webpack --watch",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@jupyter-widgets/base": "^1.1.10",
