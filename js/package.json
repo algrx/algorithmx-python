@@ -29,7 +29,7 @@
     "build": "npm run clean && npm run build:nbextension && npm run build:labextension",
     "build:nbextension": "webpack -p",
     "build:labextension": "cd ../algorithmx && mkdirp labextension && cd labextension && npm pack ../../js",
-    "clean": "npm run clean:nbextension && npm run clean:nbextension",
+    "clean": "npm run clean:nbextension && npm run clean:labextension",
     "clean:nbextension": "rimraf ../algorithmx/nbextension/static && rimraf dist/",
     "clean:labextension": "rimraf ../algorithmx/labextension && rimraf dist-lab/",
     "watch": "webpack --watch",

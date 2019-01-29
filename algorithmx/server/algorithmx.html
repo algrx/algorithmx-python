@@ -99,10 +99,10 @@
     </div>
     <div class="output" id="output"></div>
     <div class="footer">
-      <div class="button" onclick="clickPlay();">
+      <div class="button" onclick="clickPlay()">
         <i class="fas fa-play button-icon" id="button-play"></i>
       </div>
-      <div class="button" onclick="clickReset();">
+      <div class="button" onclick="clickReset()">
         <i class="fas fa-redo-alt button-icon" id="button-reset"></i>
       </div>
     </div>
@@ -110,109 +110,113 @@
 
   <script>
     // main client, used for event handling
-    let client = algorithmx.client('output');
+    let client = algorithmx.client('output')
     // main canvas interface
-    let canvas = client.canvas();
+    let canvas = client.canvas()
 
-    // whether the simulation is running
-    let running = false;
+    // whether the simulation is running (only false when the page is loaded)
+    let running = false
     // whether the simulation has been stopped
-    let stopped = true;
+    let stopped = true
 
     function dispatch(eventStr) {
       // receive messages from the server and send them to the client
-      const event = JSON.parse(eventStr);
+      const event = JSON.parse(eventStr)
       if (event.canvas === 'output') client.dispatch(event.data)
     }
 
     // open the websocket
-    let socket = initSocket(function() {}, dispatch);
+    let socket = initSocket(function() {}, dispatch)
 
     client.subscribe(function(event) {
       // send messages to the server through the websocket
       socket.send(JSON.stringify({ canvas: 'output', data: event }))
-    });
+    })
 
     function start() {
-      // immediately resume all event queues
-      canvas.eventQ(null).startall();
-
       if (running === false) {
         // trigger start
-        canvas.broadcast('start');
-        running = true;
+        canvas.broadcast('start')
+        // allow time for buffering
+        canvas.stopall()
+        setTimeout(() => canvas.eventQ(null).startall(), 10)
+      } else {
+        // immediately resume all event queues
+        canvas.eventQ(null).startall()
       }
-      stopped = false;
+      running = true
+      stopped = false
     }
 
     function stop() {
       // immediately stop all event queues
-      canvas.eventQ(null).stopall();
-      stopped = true;
+      canvas.eventQ(null).stopall()
+      stopped = true
     }
 
     function restart() {
       // immediately cancel all scheduled events on all event queues
-      canvas.eventQ(null).cancelall();
+      canvas.eventQ(null).cancelall()
 
-      canvas.eventQ(null).start(); // make sure that the main queue is running
-      canvas.duration(0.1).remove(); // clear graphics
+      canvas.eventQ(null).start() // make sure that the main queue is running
+      canvas.duration(0.2).remove() // clear graphics
 
-      if (stopped) {
-        // if the simulation was stopped, wait for the start button to be pressed again
-        canvas.stopall();
-        running = false;
-      } else {
-        // if the simulation was running, immediately send a start message
-        canvas.broadcast('start');
-        canvas.stopall();
-        // allow time for remove animation
-        setTimeout(() => canvas.eventQ(null).startall(), 100);
-        running = true;
-      }
+      // send a start message
+      canvas.broadcast('start')
+
+      // allow time for buffering and remove animation
+      canvas.stopall()
+      setTimeout(() => canvas.eventQ(null).startall(), 330)
+
+      running = true
+      stopped = false
     }
 
     function clickPlay() {
       if (stopped) {
-        d3.select('#button-play').attr('class', 'fas fa-pause button-icon');
-        start();
+        d3.select('#button-play').attr('class', 'fas fa-pause button-icon')
+        reconnect(start)
       } else {
-        d3.select('#button-play').attr('class', 'fas fa-play button-icon');
-        stop();
+        d3.select('#button-play').attr('class', 'fas fa-play button-icon')
+        stop()
       }
     }
 
     function clickReset() {
       // rotating animation
-      d3.select('#button-reset').transition().duration(400).styleTween('transform', function rotateTween() {
-        var i = d3.interpolate(0, 360);
-        return function(t) { return "rotate(" + i(t) + "deg)"; };
+      d3.select('#button-reset').transition().duration(350).styleTween('transform', function rotateTween() {
+        var i = d3.interpolate(0, 360)
+        return function(t) { return "rotate(" + i(t) + "deg)" }
       })
+      d3.select('#button-play').attr('class', 'fas fa-pause button-icon')
+      reconnect(restart)
+    }
 
+    function reconnect(onConnect) {
       // attempt to reconnect the socket if the server has restarted
       if (socket.readyState !== socket.OPEN)
-        socket = initSocket(function (socket) { restart(); }, dispatch)
-      else restart();
+        socket = initSocket(function (socket) { onConnect() }, dispatch)
+      else onConnect()
     }
 
     function resize() {
       const width = document.getElementById('output').clientWidth
       const height = document.getElementById('output').clientHeight
       // immediately resize the canvas
-      canvas.eventQ(null).size([width, height])
+      canvas.eventQ(null).duration(0).size([width, height])
     }
 
     function initSocket(onOpen, onMessage) {
       // open socket on next port
-      const socket = new WebSocket('ws://localhost:' + (parseInt(location.port) + 1));
+      const socket = new WebSocket('ws://localhost:' + (parseInt(location.port) + 1))
 
       socket.onopen = function () {
-        if (onOpen) onOpen(socket);
+        if (onOpen) onOpen(socket)
       }
       socket.onmessage = function (event) {
-        if (onMessage) onMessage(event.data);
+        if (onMessage) onMessage(event.data)
       }
-      return socket;
+      return socket
     }
   </script>
 </html>

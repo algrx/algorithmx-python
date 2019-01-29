@@ -75,7 +75,7 @@ class Selection:
         self._context.client.dispatch(attr_event(self._context, visible, lambda d: {'visible': d}))
         return self
 
-    def eventQ(self: S, queue: Union[str, int, None] = 'default') -> S:
+    def eventQ(self: S, queue: Union[Any, None] = 'default') -> S:
         """
         Sets the queue onto which all events triggered by the selection should be added. Each queue handles events
         independently, and all queues execute in parallel. Since queues can be delayed (see :meth:`pause`), this
@@ -83,9 +83,9 @@ class Selection:
 
         The ``None`` queue is special; all events added to it will execute immediately. The default queue is named "default".
 
-        :param queue: The name of the queue. This can be any string or number, or ``None`` for the immediate queue.
+        :param queue: The ID of the queue, which will be converted to a string, or ``None`` for the immediate queue.
             Defaults to "default".
-        :type queue: Union[str, int, None]
+        :type queue: Union[Any, None]
 
         :return: A new instance of the current selection using the specified event queue.
         """
@@ -215,13 +215,13 @@ class Selection:
         })
         return self
 
-    def stop(self: S, queue: Union[Union[str, int], Iterable[Union[str, int]]] = 'default') -> S:
+    def stop(self: S, queue: Any = 'default') -> S:
         """
-        Stops the execution of all scheduled events on one or more event queues.
-        Note this will still be added as an event onto the current queue.
+        Stops the execution of all scheduled events on the given event queue.
+        Note that this will still be added as an event onto the current queue.
 
-        :param queue: The name of the queue to stop, or an iterable container of names. Defaults to "default".
-        :type queue: Union[Union[str, int], Iterable[Union[str, int]]]
+        :param queue: The ID of the queue to stop, which will be converted to a string.
+        :type queue: Any
         """
         self._context.client.dispatch(queue_event(self._context, 'stop', queue))
         return self
@@ -234,13 +234,13 @@ class Selection:
         self._context.client.dispatch(queue_event(self._context, 'stop', None))
         return self
 
-    def start(self: S, queue: Union[Union[str, int], Iterable[Union[str, int]]] = 'default') -> S:
+    def start(self: S, queue: Any = 'default') -> S:
         """
-        Starts/resumes the execution of all scheduled events on one or more event queues.
+        Starts/resumes the execution of all scheduled events on the given event queue.
         Note this will still be added as an event onto the current queue.
 
         :param queue: The name of the queue to start, or an iterable container of names. Defaults to "default".
-        :type queue: Union[Union[str, int], Iterable[Union[str, int]]]
+        :type queue: Any
         """
         self._context.client.dispatch(queue_event(self._context, 'start', queue))
         return self
@@ -248,18 +248,18 @@ class Selection:
     def startall(self: S) -> S:
         """
         Starts/resumes the execution of all scheduled events on all event queues.
-        Note this will still be added as an event onto the current queue.
+        Note that this will still be added as an event onto the current queue.
         """
         self._context.client.dispatch(queue_event(self._context, 'start', None))
         return self
 
-    def cancel(self: S, queue: Union[Union[str, int], Iterable[Union[str, int]]] = 'default') -> S:
+    def cancel(self: S, queue: Any = 'default') -> S:
         """
-        Cancels all scheduled events on one or more event queues.
+        Cancels all scheduled events on the given event queue.
         Note this will still be added as an event onto the current queue.
 
         :param queue: The name of the queue to cancel, or an iterable container of names. Defaults to "default".
-        :type queue: Union[Union[str, int], Iterable[Union[str, int]]]
+        :type queue: Any
         """
         self._context.client.dispatch(queue_event(self._context, 'cancel', queue))
         return self
@@ -267,7 +267,7 @@ class Selection:
     def cancelall(self: S) -> S:
         """
         Cancels all scheduled events on all event queues.
-        Note this will still be added as an event onto the current queue.
+        Note that this will still be added as an event onto the current queue.
         """
         self._context.client.dispatch(queue_event(self._context, 'cancel', None))
         return self

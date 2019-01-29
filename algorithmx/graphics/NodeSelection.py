@@ -1,4 +1,4 @@
-from typing import Union, Tuple, Iterable, TypeVar
+from typing import Union, Tuple, Iterable, TypeVar, Any
 
 from .Selection import Selection, ElementArg
 from .LabelSelection import LabelSelection
@@ -15,26 +15,26 @@ class NodeSelection(Selection):
         """
         return super().remove()
 
-    def label(self, id: Union[str, int] = 'value') -> LabelSelection:
+    def label(self, id: Any = 'value') -> LabelSelection:
         """
         Selects a single label, attached to the node, by its ID.
 
         By default, each node is initialized with a "value" label, located at the center of the node and displaying its ID.
         Any additional labels will be automatically positioned along the boundary of the node.
 
-        :param id: The ID of the label. Defaults to "value".
-        :type id: Union[str, int]
+        :param id: The ID of the label, which will be converted to a string. Defaults to "value".
+        :type id: Any
 
         :return: A new selection corresponding to the given label.
         """
         return self.labels([id])
 
-    def labels(self, ids: Iterable[Union[str, int]]) -> LabelSelection:
+    def labels(self, ids: Iterable[Any]) -> LabelSelection:
         """
         Selects multiple labels, attached to the node, using a list of ID values.
 
-        :param ids: An iterable container of label IDs.
-        :type ids: Iterable[Union[str, int]]
+        :param ids: An iterable container of label IDs, which will be converted to strings.
+        :type ids: Iterable[Any]
 
         :return: A new selection corresponding to the given labels.
         """
@@ -56,19 +56,9 @@ class NodeSelection(Selection):
         self._context.client.dispatch(attr_event(self._context, shape, lambda d: {'shape': d}))
         return self
 
-    def corners(self: S, radius: ElementArg[NumExpr]) -> S:
-        """
-        Sets the rounding of the node's corners. This only applies to rectangular nodes.
-
-        :param radius: The radial corner rounding.
-        :type radius: :data:`~graphics.types.ElementArg`\\[:data:`~graphics.types.NumExpr`]
-        """
-        self._context.client.dispatch(attr_event(self._context, radius, lambda d: {'corners': d}))
-        return self
-
     def color(self: S, color: ElementArg[str]) -> S:
         """
-        Sets the color of the node.
+        Sets the color of the node. The default color is "gray".
 
         :param color: A CSS color string.
         :type color: :data:`~graphics.types.ElementArg`\\[str]

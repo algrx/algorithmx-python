@@ -1,4 +1,4 @@
-from typing import Union, Tuple, List, TypeVar, Iterable
+from typing import Union, Tuple, List, TypeVar, Iterable, Any
 
 from .Selection import Selection
 from .types import ElementArg, NumExpr
@@ -30,31 +30,26 @@ def receive_handler(event: ReceiveEvent, listeners: SelectionListeners):
     elif event['type'] == ReceiveEventType.Error:
         raise GraphicsException(event['data']['message'])
 
-EdgeSelector = Union[
-    Tuple[Union[str, int], Union[str, int]],
-    Tuple[Union[str, int], Union[str, int], Union[str, int]]
-]
-
 S = TypeVar('S', bound='CanvasSelection')
 
 class CanvasSelection(Selection):
-    def node(self, id: Union[str, int]) -> NodeSelection:
+    def node(self, id: Any) -> NodeSelection:
         """
         Selects a single node by its ID.
 
-        :param id: The ID of the node.
-        :type id: Union[str, int]
+        :param id: The ID of the node, which will be converted to a string.
+        :type id: Any
 
         :return: A new selection corresponding to the given node.
         """
         return self.nodes([id])
 
-    def nodes(self, ids: Iterable[Union[str, int]]) -> NodeSelection:
+    def nodes(self, ids: Iterable[Any]) -> NodeSelection:
         """
         Selects multiple nodes using a list of ID values.
 
-        :param ids: An iterable container of node IDs.
-        :type ids: Iterable[Union[str, int]]
+        :param ids: An iterable container of node IDs, which will be converted to strings.
+        :type ids: Iterable[Any]
 
         :return: A new selection corresponding to the given nodes.
         """
@@ -62,32 +57,34 @@ class CanvasSelection(Selection):
             ids=[str(k) for k in ids], data=list(ids))
         return NodeSelection(node_context)
 
-    def edge(self, edge: EdgeSelector) -> None:
+    def edge(self, edge: Union[Tuple[Any, Any], Tuple[Any, Any, Any]]) -> None:
         """
         Selects a single edge by its source, target, and optional ID. The additional ID value will distinguish edges
         connected to the same nodes. Once the edge has been added, source and target nodes can be provided in any order.
 
         :param edge: A (source, target) or (source, target, ID) tuple.
-        :type edge: Tuple[Union[str, int], Union[str, int]]
-        :type edge: Tuple[Union[str, int], Union[str, int], Union[str, int]]
+            All values will be converted to strings.
+        :type edge: Tuple[Any, Any]
+        :type edge: Tuple[Any, Any, Any]
 
         :return: A new selection corresponding to the given edge.
         """
         return self.edges([edge])
 
-    def edges(self, edges: Iterable[EdgeSelector]) -> None:
+    def edges(self, edges: Iterable[Union[Tuple[Any, Any], Tuple[Any, Any, Any]]]) -> None:
         """
         Selects multiple edges using a list of source, target, and optional ID tuples.
 
         :param edges: An iterable container of (source, target) or (source, target, ID) tuples.
-        :type edges: Iterable[Tuple[Union[str, int], Union[str, int], Union[str, int]?]]
+            All values will be converted to strings.
+        :type edges: Iterable[Union[Tuple[Any, Any], Tuple[Any, Any, Any]]]
 
         :return: A new selection corresponding to the given edges.
         """
         edge_ids = []
         initattr = []
         for edge in edges:
-            ordered_nodes = [edge[0], edge[1]]
+            ordered_nodes = [str(edge[0]), str(edge[1])]
             ordered_nodes.sort()
 
             edge_ids.append('{}-{}{}'.format(ordered_nodes[0], ordered_nodes[1],
@@ -98,23 +95,23 @@ class CanvasSelection(Selection):
             ids=edge_ids, data=list(edges), initattr=initattr)
         return EdgeSelection(edge_context)
 
-    def label(self, id: Union[str, int] = 'title') -> LabelSelection:
+    def label(self, id: Any = 'title') -> LabelSelection:
         """
         Selects a single label, attached to the canvas, by its ID.
 
-        :param id: The ID of the label. Defaults to "title".
-        :type id: Union[str, int]
+        :param id: The ID of the label, which will be converted to a string. Defaults to "title".
+        :type id: Any
 
         :return: A new selection corresponding to the given label.
         """
         return self.labels([id])
 
-    def labels(self, ids: Iterable[Union[str, int]]) -> LabelSelection:
+    def labels(self, ids: Iterable[Any]) -> LabelSelection:
         """
         Selects multiple labels, attached to the canvas, using an array of ID values.
 
-        :param ids: An iterable container of labels IDs.
-        :type ids: Iterable[Union[str, int]]
+        :param ids: An iterable container of labels IDs, which will be converted to strings.
+        :type ids: Iterable[Any]
 
         :return: A new selection corresponding to the given labels.
         """

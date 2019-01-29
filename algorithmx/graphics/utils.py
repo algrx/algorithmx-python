@@ -45,12 +45,12 @@ def attr_event(sel: SelectionContext, arg, attr) -> Dict:
     }
 
 def queue_event(sel: SelectionContext, event_type: str,
-                queues: Union[None, str, int, Iterable[Union[str, int]]]) -> Dict:
-    queue_list = None if queues is None else [str(q) for q in (queues if is_iterable(queues) else [queues])]
+                queue: Union[Any, None]) -> Dict:
+    queues = None if queue is None else [str(queue)]
     return {
         'type': event_type,
         'queue': sel.queue,
-        'data': {'queues': queue_list}
+        'data': {'queues': queues}
     }
 
 def merge_dict_rec(a: Dict, b: Dict) -> Dict:

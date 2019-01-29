@@ -1,4 +1,4 @@
-from typing import Union, Tuple, Iterable, Optional, TypeVar
+from typing import Union, Tuple, Iterable, Optional, TypeVar, Any
 
 from .Selection import Selection
 from .LabelSelection import LabelSelection
@@ -9,7 +9,7 @@ from .utils import attr_event, update_animation
 S = TypeVar('S', bound='EdgeSelection')
 
 class EdgeSelection(Selection):
-    def traverse(self: S, source: Optional[ElementArg[Union[str, int]]] = None) -> S:
+    def traverse(self: S, source: Optional[ElementArg[Any]] = None) -> S:
         """
         Sets the animation type to "traverse" (see :meth:`~graphics.Selection.animate`), and configures the node at which the traversal
         should begin. This will typically be followed by :meth:`~color`.
@@ -17,8 +17,9 @@ class EdgeSelection(Selection):
         If no source is given, the first node in each edge tuple used to construct the selection will be used.
         If the source is not connected, the edge's actual source will be used.
 
-        :param source: The ID of the node at which the traversal animation should begin.
-        :type source: Optional[:data:`~graphics.types.ElementArg`\\[Union[str, int]]]
+        :param source: The ID of the node at which the traversal animation should begin,
+            which will be converted to a string.
+        :type source: Optional[:data:`~graphics.types.ElementArg`\\[Any]
         """
         context = self._context.copy()
         new_source = lambda e, i: self._context.initattr[i]['source'] if source is None else source
@@ -27,23 +28,23 @@ class EdgeSelection(Selection):
         return self.__class__(context)
 
 
-    def label(self, id: Union[str, int] = 'weight') -> LabelSelection:
+    def label(self, id: Any = 'weight') -> LabelSelection:
         """
         Selects a single label, attached to the edge, by its ID.
 
-        :param id: The ID of the label. Defaults to "weight".
-        :type id: Union[str, int]
+        :param id: The ID of the label, which will be converted to a string. Defaults to "weight".
+        :type id: Any
 
         :return: A new selection corresponding to the given label.
         """
         return self.labels([id])
 
-    def labels(self, ids: Iterable[Union[str, int]]) -> LabelSelection:
+    def labels(self, ids: Iterable[Any]) -> LabelSelection:
         """
         Selects multiple labels, attached to the edge, using a list of ID values.
 
-        :param ids: An iterable container of label IDs.
-        :type ids: Iterable[Union[str, int]]
+        :param ids: An iterable container of label IDs, which will be converted to strings.
+        :type ids: Iterable[Any]
 
         :return: A new selection corresponding to the given labels.
         """
@@ -83,7 +84,7 @@ class EdgeSelection(Selection):
     def color(self: S, color: ElementArg[str]) -> S:
         """
         Sets color of the edge. Note that this can be animated with a traversal animation (see :meth:`~traverse`).
-        The default duration of color animations is ``0.5``, to make traversals clearer.
+        The default color is "lightgray". The default duration of color animations is ``0.5``, to make traversals clearer.
 
         :param color: A CSS color string.
         :type color: :data:`~graphics.types.ElementArg`\\[str]
