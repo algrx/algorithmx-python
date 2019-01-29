@@ -1,9 +1,9 @@
 .. _examples:
 
-Jupyter Examples
-================
+Notebooks
+=========
 
-Below are some example, created using Jupyter notebooks:
+Below are some examples, created using Jupyter notebooks:
 
 .. toctree::
     :glob:

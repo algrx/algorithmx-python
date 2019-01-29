@@ -84,7 +84,7 @@ class EdgeSelection(Selection):
     def color(self: S, color: ElementArg[str]) -> S:
         """
         Sets color of the edge. Note that this can be animated with a traversal animation (see :meth:`~traverse`).
-        The default color is "lightgray". The default duration of color animations is ``0.5``, to make traversals clearer.
+        The default color is "lightgray".
 
         :param color: A CSS color string.
         :type color: :data:`~graphics.types.ElementArg`\\[str]

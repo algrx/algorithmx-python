@@ -116,7 +116,7 @@ class Selection:
     def duration(self: S, seconds: ElementArg[Union[int, float]]) -> S:
         """
         Configures the duration of all animations triggered by the selection. A duration of ``0`` will ensure that changes
-        occur immediately. The default duration is ``0.35``.
+        occur immediately. The default duration is ``0.5``.
 
         :param seconds: The animation duration, in seconds.
         :type seconds: :data:`~graphics.types.ElementArg`\\[Union[int, float]]

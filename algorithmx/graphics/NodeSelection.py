@@ -74,6 +74,8 @@ class NodeSelection(Selection):
         Note that size can be set relative to the node's current size using string expressions, e.g. "1.5x" for circles
         or ("1.5x", "1.5y") for rectangles and other shapes.
 
+        The default size is (12, 12).
+
         :param size: The radius of the node, or a (width/2, height/2) tuple.
         :type size: :data:`~graphics.types.ElementArg`\\[Union[:data:`~graphics.types.NumExpr`, Tuple[:data:`~graphics.types.NumExpr`, :data:`~graphics.types.NumExpr`]]]
         """
