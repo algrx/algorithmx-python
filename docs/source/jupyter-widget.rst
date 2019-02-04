@@ -10,11 +10,8 @@ the following way:
 
     import algorithmx
 
-    # Create a widget
-    widget = algorithmx.jupyter_widget()
-
-    # Create a CanvasSelection interface
-    canvas = widget.canvas()
+    # Create a Jupyter canvas interface
+    canvas = algorithmx.jupyter_canvas()
 
     # Set the size of the canvas
     canvas.size((300, 200))
@@ -23,21 +20,17 @@ the following way:
     canvas.nodes([1, 2]).add()
     canvas.edge((1, 2)).add()
 
-    # Display the widget
-    display(widget)
+    # Display the canvas
+    display(canvas)
 
 Note that you need to hold down the ``ctrl``/``cmd`` key to zoom in. If you are creating an algorithm simulation, you
 can also enable start/stop/restart buttons:
 
 .. code-block:: python
 
-    widget = algorithmx.jupyter_widget(buttons=True)
+    canvas = algorithmx.jupyter_canvas(buttons=True)
 
 
 .. automodule:: algorithmx
 
-.. autofunction:: algorithmx.jupyter_widget
-
-.. autoclass:: algorithmx.jupyter.JupyterWidget
-   :members:
-
+.. autofunction:: algorithmx.jupyter_canvas

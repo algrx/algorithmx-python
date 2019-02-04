@@ -1,5 +1,6 @@
 from .server import Server
-from .jupyter import JupyterWidget
+from .jupyter import JupyterClient, JupyterCanvas
+from .graphics import CanvasSelection
 
 def http_server(file: str = None, port: int = 5050) -> Server:
     """
@@ -18,11 +19,14 @@ def http_server(file: str = None, port: int = 5050) -> Server:
     """
     return Server(file, port)
 
-def jupyter_widget(buttons: bool = False) -> JupyterWidget:
-    """
-    Creates a new Jupyter widget for displaying the network.
+def jupyter_client(buttons: bool = False) -> JupyterClient:
+    return JupyterClient(buttons=buttons)
 
-    :param buttons: Whether or not the widget should include buttons for starting/stopping/restarting events on the
-        network (useful for algorithm simulations). Disabled by default.
+def jupyter_canvas(buttons: bool = False) -> JupyterCanvas:
     """
-    return JupyterWidget(buttons=buttons)
+    Creates a new :class:`~graphics.CanvasSelection` which will dispatch and receive events through a Jupyter
+    widget, and which can be displayed using the IPython ``display`` function.
+
+    By default, the canvas size is (400, 250), and requires the ``ctrl``/``cmd`` to be held down while zooming.
+    """
+    return jupyter_client(buttons=buttons).canvas()

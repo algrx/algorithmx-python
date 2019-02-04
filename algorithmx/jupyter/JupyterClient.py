@@ -4,28 +4,28 @@ from traitlets import Unicode, List as SyncList, Bool as SyncBool
 from ._frontend import module_name, module_version
 import json
 
-from ..graphics import CanvasSelection, canvas_selection, DispatchEvent, ReceiveEvent
+from .JupyterCanvas import JupyterCanvas
+from ..graphics import CanvasSelection, canvas_selection, EventHandler, DispatchEvent, ReceiveEvent
 
-
-class JupyterWidget(DOMWidget):
-    _model_name = Unicode('CanvasModel').tag(sync=True)
+class JupyterClient(DOMWidget, EventHandler):
+    _model_name = Unicode('AlgorithmxModel').tag(sync=True)
     _model_module = Unicode(module_name).tag(sync=True)
     _model_module_version = Unicode(module_version).tag(sync=True)
-    _view_name = Unicode('CanvasView').tag(sync=True)
+    _view_name = Unicode('AlgorithmxView').tag(sync=True)
     _view_module = Unicode(module_name).tag(sync=True)
     _view_module_version = Unicode(module_version).tag(sync=True)
 
-    _dispatch_events: SyncList = SyncList(Unicode, []).tag(sync=True)
-    _show_buttons: SyncBool = SyncBool(False).tag(sync=True)
-
     _subscriptions: List[Callable[[ReceiveEvent], Any]]
+
+    events: SyncList = SyncList(Unicode, []).tag(sync=True)
+    show_buttons: SyncBool = SyncBool(False).tag(sync=True)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
         self._subscriptions = []
         if 'buttons' in kwargs:
-            self._show_buttons = kwargs['buttons']
+            self.show_buttons = kwargs['buttons']
 
         def on_msg(widget, content, buffers):
             event = json.loads(content)
@@ -38,17 +38,10 @@ class JupyterWidget(DOMWidget):
 
     def dispatch(self, event: DispatchEvent):
         str_event = json.dumps(event)
-        self._dispatch_events = self._dispatch_events + [str_event]
+        self.events = self.events + [str_event]
 
     def subscribe(self, listener: Callable[[ReceiveEvent], Any]):
         self._subscriptions.append(listener)
 
-    def canvas(self) -> CanvasSelection:
-        """
-        Creates a new :class:`~graphics.CanvasSelection` which will dispatch and receive events through the Jupyter
-        widget. The default canvas size is (400, 250).
-
-        Note that by default, you need to hold down the ``ctrl``/``cmd`` key to zoom in
-        (see :meth:`~graphics.CanvasSelection.zoomkey`).
-        """
-        return canvas_selection('_jupyter', self)
+    def canvas(self) -> JupyterCanvas:
+        return canvas_selection('_jupyter', self, JupyterCanvas)

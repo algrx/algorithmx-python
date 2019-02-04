@@ -1,4 +1,5 @@
 from ..graphics import EventHandler, ReceiveEvent, DispatchEvent
 from ..graphics import CanvasSelection
 
-from .JupyterWidget import JupyterWidget
+from .JupyterClient import JupyterClient
+from .JupyterCanvas import JupyterCanvas

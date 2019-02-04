@@ -220,10 +220,11 @@ class CanvasSelection(Selection):
         return self
 
 
-def canvas_selection(canvas: str, handler: EventHandler) -> CanvasSelection:
+def canvas_selection(canvas: str, handler: EventHandler,
+                     canvas_class: CanvasSelection = CanvasSelection) -> CanvasSelection:
     context = SelectionContext(handler)
     context.name = 'canvas'
     context.ids = [canvas]
     context.data = [canvas]
     handler.subscribe(lambda event: receive_handler(event, context.listeners))
-    return CanvasSelection(context)
+    return canvas_class(context)

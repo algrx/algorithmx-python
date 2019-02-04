@@ -3,17 +3,18 @@ import { version, name } from './version'
 import * as buttonUtils from './buttons'
 import * as algorithmx from 'algorithmx'
 
-export class CanvasModel extends DOMWidgetModel {
+export class AlgorithmxModel extends DOMWidgetModel {
   defaults() {
     return {...super.defaults(),
-      _model_name: 'CanvasModel',
+      _model_name: 'AlgorithmxModel',
       _model_module: name,
       _model_module_version: version,
-      _view_name: 'CanvasView',
+      _view_name: 'AlgorithmxView',
       _view_module: name,
       _view_module_version: version,
 
-      _dispatch_events: []
+      events: [],
+      show_buttons: false
     }
   }
 
@@ -22,7 +23,7 @@ export class CanvasModel extends DOMWidgetModel {
   }
 }
 
-export class CanvasView extends DOMWidgetView {
+export class AlgorithmxView extends DOMWidgetView {
   private client: algorithmx.Client | null = null
   private canvas: algorithmx.CanvasSelection | null = null
   private eventIndex = 0
@@ -38,14 +39,14 @@ export class CanvasView extends DOMWidgetView {
   }
 
   playAllEvents() {
-    const events = this.model.get('_dispatch_events')
+    const events = this.model.get('events')
     this.playEvents(events)
   }
 
   eventsChanged() {
     if (this.client === null) return
 
-    const events: ReadonlyArray<string> = this.model.get('_dispatch_events')
+    const events: ReadonlyArray<string> = this.model.get('events')
     const newEvents = events.slice(this.eventIndex)
     this.eventIndex = events.length
 
@@ -143,10 +144,10 @@ export class CanvasView extends DOMWidgetView {
     const element: Element = this.el
     element.appendChild(canvasDiv)
 
-    const showButtons = this.model.get('_show_buttons')
+    const showButtons = this.model.get('show_buttons')
     if (showButtons) this.renderButtons()
 
-    this.model.on('change:_dispatch_events', this.eventsChanged, this)
+    this.model.on('change:events', this.eventsChanged, this)
     this.eventsChanged()
   }
 }
