@@ -11,8 +11,8 @@ S = TypeVar('S', bound='EdgeSelection')
 class EdgeSelection(Selection):
     def traverse(self: S, source: Optional[ElementArg[Any]] = None) -> S:
         """
-        Sets the animation type to "traverse" (see :meth:`~graphics.Selection.animate`), and configures the node at which the traversal
-        should begin. This will typically be followed by :meth:`~color`.
+        Sets the selection's animation type such that color (:meth:`~graphics.EdgeSelection.color`) is animated with a traversal,
+        and configures the node at which the traversal should begin.
 
         If no source is given, the first node in each edge tuple used to construct the selection will be used.
         If the source is not connected, the edge's actual source will be used.
@@ -84,7 +84,7 @@ class EdgeSelection(Selection):
     def color(self: S, color: ElementArg[str]) -> S:
         """
         Sets color of the edge. Note that this can be animated with a traversal animation (see :meth:`~traverse`).
-        The default color is "lightgray".
+        The default color is "light-gray".
 
         :param color: A CSS color string.
         :type color: :data:`~graphics.types.ElementArg`\\[str]

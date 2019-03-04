@@ -21,7 +21,7 @@ if ((window as any).require !== undefined) {
   ;(window as any).require.config({
     paths: {
       webcola: 'https://unpkg.com/webcola@^3.0.0/WebCola/cola.min',
-      algorithmx: 'https://unpkg.com/algorithmx@^1.0.0-beta.1/dist/algorithmx.min',
+      algorithmx: 'https://unpkg.com/algorithmx@^1.0.0/dist/algorithmx.min',
       ...d3Paths
     },
     shim: {

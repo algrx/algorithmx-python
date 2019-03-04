@@ -13,6 +13,7 @@ class GraphicsException(Exception):
     pass
 
 def receive_handler(event: ReceiveEvent, listeners: SelectionListeners):
+    print(event)
     event_data = event['data']
     def trigger_listener(name):
         if name in listeners:

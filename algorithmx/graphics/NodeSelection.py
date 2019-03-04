@@ -58,7 +58,7 @@ class NodeSelection(Selection):
 
     def color(self: S, color: ElementArg[str]) -> S:
         """
-        Sets the color of the node. The default color is "gray".
+        Sets the color of the node. The default color is "dark-gray".
 
         :param color: A CSS color string.
         :type color: :data:`~graphics.types.ElementArg`\\[str]

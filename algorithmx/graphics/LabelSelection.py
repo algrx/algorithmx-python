@@ -91,7 +91,7 @@ class LabelSelection(Selection):
 
     def color(self: S, color: ElementArg[str]) -> S:
         """
-        Sets the color of the label's text.
+        Sets the color of the label's text. The default color is "gray".
 
         :param color: A CSS color string.
         :type color: :data:`~graphics.types.ElementArg`\\[str]

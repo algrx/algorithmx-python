@@ -93,26 +93,6 @@ class Selection:
         context.queue = str(queue)
         return self.__class__(context)
 
-    def animate(self: S, animation_type: ElementArg[str]) -> S:
-        """
-        Configures the type of animation which should be used for all attribute changes triggered by the selection.
-
-        :param animation_type: One of the following strings:
-
-            * "normal": The standard animation, applicable in most cases.
-            * "scale": Animates the size of elements being added/removed.
-            * "fade": Animates the opacity of elements being added/removed.
-            * "scale-face": Animates both the size and opacity of elements being added/removed.
-            * "traverse": Changes the color of edges using a traversal animation.
-
-        :type animation_type: :data:`~graphics.types.ElementArg`\\[str]
-
-        :return: A new instance of the current selection using the specified animation type.
-        """
-        context = self._context.copy()
-        context.animation = update_animation(context, animation_type, lambda d: {'type': d, 'data': {}})
-        return self.__class__(context)
-
     def duration(self: S, seconds: ElementArg[Union[int, float]]) -> S:
         """
         Configures the duration of all animations triggered by the selection. A duration of ``0`` will ensure that changes
