@@ -25,7 +25,7 @@ if not pexists(js_path):
 
 jstargets = [
     pjoin(nb_path, 'index.js'),
-    pjoin(nb_path, 'extension.js'),
+    pjoin(nb_path, 'extension.js')
 ]
 
 package_data_spec = {
@@ -79,13 +79,14 @@ setup_args = dict(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
-        'Framework :: Jupyter',
+        'Framework :: Jupyter'
     ],
     include_package_data = True,
     install_requires = [
         'ipywidgets>=7.0.0'
     ],
     extras_require = {
+        'networkx': ['networkx'],
         'test': [
             'pytest>=3.3.0',
             'pytest-cov<2.6.0',
@@ -98,10 +99,10 @@ setup_args = dict(
             'nbsphinx>=0.2.13',
             'jupyter_sphinx',
             'pytest_check_links',
-            'pypandoc',
-        ],
+            'networkx',
+        ]
     },
-    entry_points = {},
+    entry_points = {}
 )
 
 if __name__ == '__main__':

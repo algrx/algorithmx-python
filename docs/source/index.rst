@@ -22,7 +22,8 @@ Contents
    :caption: Graphics Library
 
    graphics/overview
-   graphics/selections
+   graphics/selections 
+   graphics/utils
 
 .. toctree::
    :maxdepth: 1

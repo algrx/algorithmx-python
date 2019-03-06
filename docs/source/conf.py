@@ -214,7 +214,10 @@ def split_brackets(s):
 def callback_signature(app, what, name, obj, options, signature,
                        return_annotation):
     # Sphinx doesn't seem to handle custom data types well, so we remove them
-    if name.startswith('graphics') and signature is not None:
+    ignore_types_paths = ['graphics']
+    ignore_types = len([d for d in ignore_types_paths if name.startswith(d)]) > 0
+
+    if ignore_types and signature is not None:
         split_sig = signature.split('->')
 
         params = split_sig[0].strip()
