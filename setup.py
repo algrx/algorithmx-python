@@ -97,6 +97,8 @@ setup_args = dict(
             'sphinx_rtd_theme',
             'nbsphinx>=0.2.13',
             'jupyter_sphinx',
+            'pytest_check_links',
+            'attrs>=17.4.0',
             'networkx',
         ]
     },
