@@ -90,7 +90,6 @@ setup_args = dict(
         'test': [
             'pytest>=3.3.0',
             'pytest-cov<2.6.0',
-            'nbval',
         ],
         'docs': [
             'sphinx>=1.5',
