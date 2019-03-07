@@ -3,10 +3,16 @@
 [![PyPI version](https://badge.fury.io/py/algorithmx.svg)](https://pypi.org/project/algorithmx)
 [![docs](https://readthedocs.org/projects/algorithmx-python/badge/?version=latest)](https://algorithmx-python.readthedocs.io/en/latest/?badge=latest)
 
+<img src="https://raw.githubusercontent.com/algrx/algorithmx/master/img/logo.svg?sanitize=true" align="left" hspace="10" width="80px">
+
 **AlgorithmX Python** is a library for network visualization and algorithm simulation, based on <a href="https://github.com/algrx/algorithmx">AlgorithmX</a>. It works through either a HTTP server, or as a widget in Jupyter Notebooks and JupyterLab.
+<br><br>
+
+<img src="https://raw.githubusercontent.com/algrx/algorithmx/master/img/example.svg?sanitize=true" align="center" width="600px">
 
 ## Resources
-- <a href="https://algorithmx-python.readthedocs.io">Documentation</a>
+  - <a href="https://algrx.github.io/">Website</a>
+  - <a href='https://algrx.github.io/algorithmx/docs/js'>Documentation</a>
 
 ## Installation
 
