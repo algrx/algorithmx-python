@@ -9,17 +9,12 @@ AlgorithmX can be installed using pip::
 
     pip install algorithmx
 
-or using conda::
-
-    conda install algorithmx
-
 .. _install-jupyter:
 
 Jupyter Widget
 --------------
 
-In classic Jupyter notebooks, the widget will typically be enabled by default. However, if you installed using pip with notebook version <5.3,
-you will have to manually enable it by running::
+In classic Jupyter notebooks, the widget will typically be enabled by default. However, if you installed using pip with notebook version <5.3, you will have to manually enable it by running::
 
     jupyter nbextension enable --sys-prefix --py algorithmx
 
