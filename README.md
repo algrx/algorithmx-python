@@ -24,12 +24,6 @@ AlgorithmX can be installed using pip:
 pip install algorithmx
 ```
 
-or using conda:
-
-```bash
-conda install algorithmx
-```
-
 ### Jupyter Widget
 
 In classic Jupyter notebooks, the widget will typically be enabled by default. However, if you installed using pip with notebook version <5.3, you will have to manually enable it by running:
@@ -68,8 +62,7 @@ If you are using Jupyter, add the following to a cell:
 ```python
 import algorithmx
 
-widget = algorithmx.jupyter_widget()
-canvas = widget.canvas()
+canvas = algorithmx.jupyter_canvas()
 
 canvas.nodes([1, 2]).add()
 canvas.edge((1, 2)).add()
