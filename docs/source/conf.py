@@ -29,7 +29,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.todo',
     'nbsphinx',
-    'jupyter_sphinx.embed_widgets'
+    'jupyter_sphinx.execute'
 ]
 
 # Ensure our extension is available:
@@ -234,7 +234,7 @@ def callback_signature(app, what, name, obj, options, signature,
 
 
 def setup(app):
-    app.setup_extension('jupyter_sphinx.embed_widgets')
+    app.setup_extension('jupyter_sphinx.execute')
     app.connect('autodoc-process-signature', callback_signature)
     def add_scripts(app):
         for fname in ['helper.js', 'index.js']:

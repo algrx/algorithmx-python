@@ -25,7 +25,7 @@ export const createButton = (iconName: string, onclick: () => void): HTMLDivElem
   button.onmouseup = () => { button.style.backgroundColor = HOVER_COLOR }
   button.onmouseleave = () => {
     button.style.backgroundColor = BUTTON_COLOR
-    button.style.cursor = null
+    button.style.cursor = ''
   }
 
   const icon = document.createElement('i')

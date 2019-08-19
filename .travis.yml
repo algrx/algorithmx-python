@@ -1,6 +1,6 @@
 language: python
 python:
-  - 3.7
+  - 3.6
 sudo: false
 addons:
   apt_packages:
@@ -10,9 +10,9 @@ env:
     - GROUP=python
 matrix:
   include:
-    - python: 3.7
+    - python: 3.6
       env: GROUP=python
-    - python: 3.7
+    - python: 3.6
       env: GROUP=docs
 cache:
   pip: true

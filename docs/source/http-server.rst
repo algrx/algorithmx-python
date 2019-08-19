@@ -11,7 +11,7 @@ interactive network. The library comes with all the tools needed to do this:
     import algorithmx
 
     # Create a new HTTP server
-    server = algorithmx.http_server()
+    server = algorithmx.http_server(port=5050)
     # Create a CanvasSelection interface
     canvas = server.canvas()
 

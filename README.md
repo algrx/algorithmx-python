@@ -46,7 +46,7 @@ If you wish to use the library through a HTTP/WebSocket server, follow the templ
 ```python
 import algorithmx
 
-server = algorithmx.http_server()
+server = algorithmx.http_server(port=5050)
 canvas = server.canvas()
 
 def start():
@@ -56,6 +56,8 @@ def start():
 canvas.listen('start', start)
 server.start()
 ```
+
+Be default, the output can be found at `http://localhost:5050/`.
 
 If you are using Jupyter, add the following to a cell:
 

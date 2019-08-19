@@ -1,6 +1,6 @@
 {
   "name": "algorithmx-jupyter",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "main": "dist/index.js",
   "types": "./dist/types/index.d.ts",
   "files": [
@@ -37,7 +37,19 @@
   },
   "dependencies": {
     "@jupyter-widgets/base": "^1.1.10",
-    "algorithmx": "^1.0.0-beta.1"
+    "algorithmx": "^1.0.0",
+    "webcola": "^3.0.0",
+    "d3-color": "^1.0.0",
+    "d3-dispatch": "^1.0.0",
+    "d3-drag": "^1.0.0",
+    "d3-ease": "^1.0.0",
+    "d3-interpolate": "^1.0.0",
+    "d3-path": "^1.0.0",
+    "d3-selection": "^1.0.0",
+    "d3-shape": "^1.0.0",
+    "d3-timer": "^1.0.0",
+    "d3-transition": "^1.0.0",
+    "d3-zoom": "^1.0.0"
   },
   "devDependencies": {
     "@phosphor/application": "^1.6.0",
@@ -50,9 +62,8 @@
     "rimraf": "^2.6.2",
     "source-map-loader": "^0.2.4",
     "ts-loader": "^5.2.1",
-    "typescript": "~3.1.2",
+    "typescript": "^3.5.3",
     "webpack": "^4.20.2",
-    "terser": "3.14.1",
     "webpack-cli": "^3.1.2"
   },
   "jupyterlab": {

@@ -8,10 +8,12 @@ const version = require('./package.json').version
 const name = require('./package.json').name
 const path = require('path')
 
-const externals = ['@jupyter-widgets/base', 'd3', 'webcola', 'algorithmx']
+const externals = ['@jupyter-widgets/base']
+
 const publicPath = 'https://unpkg.com/' + name + '@' + version + '/dist/index.js'
 
 const options = {
+  mode: 'production',
   module: {
     rules: rules
   },
@@ -30,7 +32,6 @@ module.exports = [
       libraryTarget: 'amd'
     },
     ...options
-
   },
   {
     // notebook bundle
@@ -54,6 +55,17 @@ module.exports = [
     externals: externals.concat(['../dist/index'])
   },
   {
+    // docs bundle
+    entry: './src/index.ts',
+    output: {
+      filename: 'index.js',
+      path: path.resolve(__dirname, '..', 'docs', 'source', '_static'),
+      library: name,
+      libraryTarget: 'amd'
+    },
+    ...options
+  },
+  {
     // embeddable bundle
     entry: './src/index.ts',
     output: {
@@ -64,17 +76,5 @@ module.exports = [
       publicPath: publicPath
     },
     ...options
-  },
-  {
-    // docs bundle
-    entry: './src/index.ts',
-    output: {
-      filename: 'index.js',
-      path: path.resolve(__dirname, '..', 'docs', 'source', '_static'),
-      library: name,
-      libraryTarget: 'amd',
-      publicPath: publicPath
-    },
-    ...options
-  },
+  }
 ]

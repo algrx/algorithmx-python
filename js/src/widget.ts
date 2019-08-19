@@ -102,6 +102,7 @@ export class AlgorithmxView extends DOMWidgetView {
     const element: Element = this.el
 
     const buttonDiv = document.createElement('div')
+    buttonDiv.style.height = '40px'
 
     const buttonPlay = buttonUtils.createButton('pause', () => {
       if (this.stopped) {
