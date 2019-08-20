@@ -31,6 +31,7 @@ extensions = [
     'nbsphinx',
     'jupyter_sphinx.execute'
 ]
+autodoc_mock_imports = ['networkx']
 
 # Ensure our extension is available:
 import sys
