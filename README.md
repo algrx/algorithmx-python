@@ -5,7 +5,7 @@
 
 <img src="https://raw.githubusercontent.com/algrx/algorithmx/master/img/logo.svg?sanitize=true" align="left" hspace="10" width="80px">
 
-**AlgorithmX Python** is a library for network visualization and algorithm simulation, based on <a href="https://github.com/algrx/algorithmx">AlgorithmX</a>. It works through either a HTTP server, or as a widget in Jupyter Notebooks and JupyterLab.
+**AlgorithmX Python** is a library for network visualization and algorithm simulation, built on <a href="https://github.com/algrx/algorithmx">AlgorithmX</a>. It works through either a WebSocket server, or as a widget in Jupyter Notebooks and JupyterLab.
 <br><br>
 
 <img src="https://raw.githubusercontent.com/algrx/algorithmx/master/img/example.svg?sanitize=true" align="center" width="600px">
