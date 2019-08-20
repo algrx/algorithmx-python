@@ -14,7 +14,7 @@ const publicPath = 'https://unpkg.com/' + name + '@' + version + '/dist/index.js
 
 const options = {
   // readthedocs has out of memory error in production
-  mode: process.env.READTHEDOCS ? 'development' : 'production',
+  mode: 'production',
   module: {
     rules: rules
   },

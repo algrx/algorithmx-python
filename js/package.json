@@ -27,7 +27,7 @@
   },
   "scripts": {
     "build": "npm run clean && npm run build:nbextension && npm run build:labextension",
-    "build:nbextension": "webpack -p",
+    "build:nbextension": "NODE_OPTIONS=--max_old_space_size=4096 webpack -p",
     "build:labextension": "cd ../algorithmx && mkdirp labextension && cd labextension && npm pack ../../js",
     "clean": "npm run clean:nbextension && npm run clean:labextension",
     "clean:nbextension": "rimraf ../algorithmx/nbextension/static && rimraf dist/",
