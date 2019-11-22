@@ -37,8 +37,7 @@
   },
   "dependencies": {
     "@jupyter-widgets/base": "^1.1.10",
-    "algorithmx": "^1.0.0",
-    "webcola": "^3.0.0",
+    "algorithmx": "^1.1.2",
     "d3-color": "^1.0.0",
     "d3-dispatch": "^1.0.0",
     "d3-drag": "^1.0.0",
@@ -49,7 +48,8 @@
     "d3-shape": "^1.0.0",
     "d3-timer": "^1.0.0",
     "d3-transition": "^1.0.0",
-    "d3-zoom": "^1.0.0"
+    "d3-zoom": "^1.0.0",
+    "webcola": "^3.0.0"
   },
   "devDependencies": {
     "@phosphor/application": "^1.6.0",
