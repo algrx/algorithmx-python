@@ -99,7 +99,7 @@ setup_args = dict(
             'jupyter_sphinx',
             'pytest_check_links',
             'attrs>=17.4.0',
-            'networkx',
+            'networkx>=2.4',
         ]
     },
     entry_points = {}

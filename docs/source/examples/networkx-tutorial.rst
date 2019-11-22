@@ -16,8 +16,8 @@ Let’s start by creating a simple NetworkX graph. We will use add_path to quick
     
     G = nx.Graph()
     
-    G.add_path([1, 2, 3])
-    G.add_path([4, 2, 5])
+    nx.add_path(G, [1, 2, 3])
+    nx.add_path(G, [4, 2, 5])
     
     print('Nodes:', G.nodes)
     print('Edges:', G.edges)
