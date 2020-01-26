@@ -237,8 +237,8 @@ def setup(app):
     app.setup_extension('jupyter_sphinx.execute')
     app.connect('autodoc-process-signature', callback_signature)
     def add_scripts(app):
-        for fname in ['helper.js', 'index.js']:
+        for fname in ['index.js']:
             if not os.path.exists(os.path.join(here, '_static', fname)):
-                app.warn('missing javascript file: %s' % fname)
+                print(f'missing javascript file: {fname}')
             app.add_javascript(fname)
     app.connect('builder-inited', add_scripts)

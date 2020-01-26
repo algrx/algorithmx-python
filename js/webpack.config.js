@@ -23,13 +23,15 @@ const options = {
   externals: externals
 }
 
+distPath = path.resolve(__dirname, 'dist'),
+
 module.exports = [
   {
     // notebook external imports
     entry: './src/extension.ts',
     output: {
       filename: 'extension.js',
-      path: path.resolve(__dirname, '..', 'algorithmx', 'nbextension', 'static'),
+      path: path.resolve(distPath, 'nbextension'),
       libraryTarget: 'amd'
     },
     ...options
@@ -39,7 +41,7 @@ module.exports = [
     entry: './src/index.ts',
     output: {
       filename: 'index.js',
-      path: path.resolve(__dirname, '..', 'algorithmx', 'nbextension', 'static'),
+      path: path.resolve(distPath, 'nbextension'),
       libraryTarget: 'amd'
     },
     ...options
@@ -49,7 +51,7 @@ module.exports = [
     entry: './src/labplugin.ts',
     output: {
       filename: 'labplugin.js',
-      path: path.resolve(__dirname, 'dist-lab'),
+      path: path.resolve(distPath, 'jupyter-lab'),
       libraryTarget: 'amd'
     },
     ...options,
@@ -60,7 +62,7 @@ module.exports = [
     entry: './src/index.ts',
     output: {
       filename: 'index.js',
-      path: path.resolve(__dirname, '..', 'docs', 'source', '_static'),
+      path: path.resolve(distPath, 'docs'),
       library: name,
       libraryTarget: 'amd'
     },
@@ -71,7 +73,7 @@ module.exports = [
     entry: './src/index.ts',
     output: {
       filename: 'index.js',
-      path: path.resolve(__dirname, 'dist'),
+      path: path.resolve(distPath, 'lib'),
       library: name,
       libraryTarget: 'amd',
       publicPath: publicPath

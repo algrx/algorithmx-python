@@ -1,0 +1,41 @@
+version: "3.7"
+services:
+  build:
+    build:
+      context: .
+      target: build
+    image: algorithmx-build
+    volumes:
+    - "./dist:/app/dist"
+    command: conda run -n algorithmx python setup.py build sdist bdist_wheel
+
+  docs:
+    build:
+      context: .
+      target: docs
+    image: algorithmx-docs
+    volumes:
+    - "./docs/build:/app/docs/build"
+    command: bash -c "
+      conda run -n docs sphinx-build -b html source build
+      && conda run -n docs python -m pytest_check_links -o links-ext=.md -o testpaths=."
+
+  jupyter:
+    build:
+      context: .
+      target: install-jupyter
+    image: algorithmx-jupyter
+  notebook:
+    image: algorithmx-jupyter
+    ports:
+    - "8888:8888"
+    tty: true
+    command: bash -ci "jupyter notebook --allow-root --ip=0.0.0.0 --port=8888"
+    depends_on: ["jupyter"]
+  lab:
+    image: algorithmx-jupyter
+    ports:
+    - "8888:8888"
+    tty: true
+    command: bash -ci "jupyter lab --allow-root --ip=0.0.0.0 --port=8888"
+    depends_on: ["jupyter"]
