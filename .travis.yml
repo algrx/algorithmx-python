@@ -6,4 +6,4 @@ services:
 script:
 - docker-compose run build
 - docker-compose run docs
-- docker-compose up notebook -d
+- docker-compose up -d notebook
