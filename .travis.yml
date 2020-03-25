@@ -7,3 +7,6 @@ script:
 - docker-compose run build
 - docker-compose run docs
 - docker-compose up -d notebook
+
+after_success:
+- ./scripts/deploy-docs.sh
