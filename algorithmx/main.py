@@ -2,7 +2,7 @@ from .server import Server
 from .jupyter import JupyterClient, JupyterCanvas
 from .graphics import CanvasSelection
 
-def http_server(file: str = None, port: int = 5050) -> Server:
+def http_server(file: str = None, host: str = 'localhost', port: int = 5050) -> Server:
     """
     Creates a new HTTP server for displaying the network, using WebSockets to transmit data. The server will only start
     once its :meth:`~server.Server.start` method is called. After the server has started, the network can be viewed by
@@ -17,7 +17,7 @@ def http_server(file: str = None, port: int = 5050) -> Server:
         (by default 5051) will also be used to transmit data through WebSockets.
     :type port: int
     """
-    return Server(file, port)
+    return Server(file, host, port)
 
 def jupyter_client(buttons: bool = False) -> JupyterClient:
     return JupyterClient(buttons=buttons)

@@ -13,7 +13,6 @@ const externals = ['@jupyter-widgets/base']
 const publicPath = 'https://unpkg.com/' + name + '@' + version + '/dist/index.js'
 
 const options = {
-  // readthedocs has out of memory error in production
   mode: 'production',
   module: {
     rules: rules

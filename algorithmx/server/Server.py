@@ -14,15 +14,15 @@ class Server:
     _file_server: FileServer
     _websocket_server: CanvasServer
 
-    def __init__(self, file: str, port: int):
+    def __init__(self, file: str, host: str, port: int):
         file_handler = None
         if file is None:
             file_handler = absolute_file_handler(ospath.abspath(ospath.dirname(__file__)), 'algorithmx.html')
         else:
             file_handler = relative_file_handler(file)
 
-        self._file_server = create_file_server(file_handler, port)
-        self._websocket_server = CanvasServer(port + 1)
+        self._file_server = create_file_server(file_handler, host, port)
+        self._websocket_server = CanvasServer(host, port + 1)
 
     def start(self):
         """

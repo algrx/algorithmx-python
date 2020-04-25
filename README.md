@@ -69,5 +69,27 @@ canvas = algorithmx.jupyter_canvas()
 canvas.nodes([1, 2]).add()
 canvas.edge((1, 2)).add()
 
-display(widget)
+display(canvas)
 ```
+
+## Development
+
+### Local build/install
+
+To install the package locally:
+```
+cd js
+npm run build
+npm run inject
+cd ..
+
+pip install --no-deps --editable .
+```
+
+To build a distributable package, in `./dist`, you can use docker:
+
+```
+docker-compose up build
+```
+
+
