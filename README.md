@@ -119,16 +119,18 @@ Then, in both cases, navigate to `examples/basic.ipynb`.
 
 ### Build package
 ```
-rm -rf build
+rm -rf build dist
 ```
 
 With docker:
 
 ```
-docker-compose up build
+docker-compose up --build build
 ```
 
 Manually:
 ```
 python setup.py build sdist bdist_wheel
 ```
+
+In both cases, the bundle can be found in `dist/`.

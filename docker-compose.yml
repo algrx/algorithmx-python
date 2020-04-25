@@ -4,6 +4,9 @@ services:
     build:
       context: .
       target: build
+    volumes:
+    - "./dist:/app/dist"
+    - "./build:/app/build"
     image: algorithmx-build
     command: conda run -n algorithmx python setup.py build sdist bdist_wheel
 
