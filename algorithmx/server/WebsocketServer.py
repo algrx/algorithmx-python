@@ -114,5 +114,5 @@ class WebsocketServer(TCPServer, ThreadingMixIn):
             client.send_message(message)
 
 
-def create_websocket_server(port: int) -> WebsocketServer:
-    return WebsocketServer(('localhost', port), WebsocketHandler)
+def create_websocket_server(host: str, port: int) -> WebsocketServer:
+    return WebsocketServer((host, port), WebsocketHandler)

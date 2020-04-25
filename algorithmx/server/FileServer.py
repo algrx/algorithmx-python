@@ -40,6 +40,6 @@ class FileServer(TCPServer):
     def start(self):
         self.serve_forever()
 
-def create_file_server(handler: FileRequestHandler, port: int) -> FileServer:
-    server = FileServer(('localhost', port), handler)
+def create_file_server(handler: FileRequestHandler, host: str, port: int) -> FileServer:
+    server = FileServer((host, port), handler)
     return server

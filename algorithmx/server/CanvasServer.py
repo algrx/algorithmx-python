@@ -8,8 +8,8 @@ class CanvasServer:
     canvas_listeners: Dict[int, List[Callable[[ReceiveEvent], Any]]] = {}
     websocket_server: WebsocketServer
 
-    def __init__(self, port: str):
-        self.websocket_server = create_websocket_server(port)
+    def __init__(self, host: str = 'localhost', port: str = 5050):
+        self.websocket_server = create_websocket_server(host, port)
         self.websocket_server.on_receive(self.receive)
 
     def start(self):

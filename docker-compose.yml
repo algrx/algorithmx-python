@@ -1,0 +1,59 @@
+version: "3.7"
+services:
+  build:
+    build:
+      context: .
+      target: build
+    volumes:
+    - "./dist:/app/dist"
+    - "./build:/app/build"
+    image: algorithmx-build
+    command: conda run -n algorithmx python setup.py build sdist bdist_wheel
+
+  http-server:
+    build:
+      context: .
+      target: http-server
+    image: algorithmx-http-server
+    ports:
+    - "5050:5050"
+    - "5051:5051"
+    volumes:
+    - "./algorithmx:/app/algorithmx"
+    - "./examples:/app/examples"
+    command: conda run -n algorithmx python -u examples/basic_http_server.py
+
+  docs:
+    build:
+      context: .
+      target: docs
+    image: algorithmx-docs
+    volumes:
+    - "./docs/build:/app/docs/build"
+    command: bash -c "
+      conda run -n docs sphinx-build -b html source build
+      && conda run -n docs python -m pytest_check_links -o links-ext=.md -o testpaths=."
+
+  notebook:
+    build:
+      context: .
+      target: install-jupyter
+    image: algorithmx-notebook
+    ports:
+    - "8888:8888"
+    volumes:
+    - "./examples:/app/examples"
+    tty: true
+    command: bash -ci "jupyter notebook --allow-root --ip=0.0.0.0 --port=8888"
+
+  jupyter-lab:
+    build:
+      context: .
+      target: install-jupyter-lab
+    image: algorithmx-jupyter-lab
+    ports:
+    - "8888:8888"
+    volumes:
+    - "./examples:/app/examples"
+    tty: true
+    command: bash -ci "jupyter lab --allow-root --ip=0.0.0.0 --port=8888"

@@ -69,5 +69,68 @@ canvas = algorithmx.jupyter_canvas()
 canvas.nodes([1, 2]).add()
 canvas.edge((1, 2)).add()
 
-display(widget)
+display(canvas)
 ```
+
+## Development
+
+### Install
+
+If you aren't using docker, you can install the package locally:
+```
+cd js
+npm run build
+npm run inject
+cd ..
+
+pip install --no-deps --editable .
+```
+
+### Run HTTP Server
+
+With docker:
+```
+docker-compose up http-server
+```
+
+Manually:
+```
+python -u examples/basic_http_server.py
+```
+
+Then, in both cases, open `localhost:5050` in a browser.
+
+### Run Notebook
+
+With docker:
+```
+docker-compose up notebook
+```
+You will need to follow the link which appears in the output.
+
+Manually:
+```
+jupyter nbextension install --symlink --sys-prefix --py algorithmx
+jupyter nbextension enable --sys-prefix --py algorithmx
+jupyter notebook 
+```
+
+Then, in both cases, navigate to `examples/basic.ipynb`.
+
+### Build package
+```
+rm -rf build dist
+```
+
+With docker:
+
+```
+docker-compose up --build build
+```
+
+Manually:
+```
+python setup.py build sdist bdist_wheel
+```
+
+In both cases, the bundle can be found in `dist/`.

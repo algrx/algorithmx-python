@@ -1,0 +1,13 @@
+.git/
+.gitignore
+dist/
+build/
+*.egg-info/
+**/.ipynb_checkpoints/
+**/__pycache__/
+**/*.pyc
+
+js/node_modules/
+algorithmx/nbextension/static/
+docs/source/_static
+docs/build
