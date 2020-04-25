@@ -74,9 +74,9 @@ display(canvas)
 
 ## Development
 
-### Local build/install
+### Install
 
-To install the package locally:
+If you aren't using docker, you can install the package locally:
 ```
 cd js
 npm run build
@@ -86,10 +86,49 @@ cd ..
 pip install --no-deps --editable .
 ```
 
-To build a distributable package, in `./dist`, you can use docker:
+### Run HTTP Server
+
+With docker:
+```
+docker-compose up http-server
+```
+
+Manually:
+```
+python -u examples/basic_http_server.py
+```
+
+Then, in both cases, open `localhost:5050` in a browser.
+
+### Run Notebook
+
+With docker:
+```
+docker-compose up notebook
+```
+You will need to follow the link which appears in the output.
+
+Manually:
+```
+jupyter nbextension install --symlink --sys-prefix --py algorithmx
+jupyter nbextension enable --sys-prefix --py algorithmx
+jupyter notebook 
+```
+
+Then, in both cases, navigate to `examples/basic.ipynb`.
+
+### Build package
+```
+rm -rf build
+```
+
+With docker:
 
 ```
 docker-compose up build
 ```
 
-
+Manually:
+```
+python setup.py build sdist bdist_wheel
+```
