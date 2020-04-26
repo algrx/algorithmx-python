@@ -1,4 +1,4 @@
-language: python
+language: generic
 
 services:
 - docker
@@ -8,5 +8,14 @@ script:
 - docker-compose run docs
 - docker-compose up -d notebook
 
-after_success:
-- ./scripts/deploy-docs.sh
+# currently this doesn't work
+deploy:
+  provider: script
+  script: ./scripts/deploy-docs.sh
+  on:
+    branch: master
+
+env:
+  global:
+    # GH_DEPLOY_TOKEN (for algrx/algorithmx)
+    secure: t+WB1hcq52l2UVXNh49gqDfUNTJGQD2sDux1sL6rCOKNs1k1L+E8dRnPGVwP5ndU0n/5W519pO/PHKd6z2xvkx7vLL12hnRmVxRm+CvsIGiQimIhIjW4OF1dMv/NS5GwrMfly0TGDZxuz1QKHRPsQHo2hj0kN+7uNtqULT7ELUiDIJGft3dOOBikIzD7iRRowXoOub0um+JKKIGVKqtw0ZnH3aSLoHSJNwhhOjki5LhfIt7mZSISq9dJrl2+BHzVQ3POi7tkCWrB/mxYTUtRXkUgGf+02C8zuGh+sA2pnATr1uWXR7agqJl3qPG25Oya/Jr85tp0XcPYLrzmkavtQSYi4FQHeuJANSqUbL1/5gR2PE3CVEm2RpleZNk9Tu1Zj34543Q9c8PO/LwmyCGgb6JJhxZ6IpmcKxBGt/r/nCydrM3NMg4fScNVQtjzx/vwJOaKZOmNoBwl4jcchRA840i2DKOZNleCxCIu/Xj7VlikD30qC9f+7Tu/1YvYjdlIOEgPaV7kLhzq/6H2BAnp3bG1BmaxARM9umvhUvQSRhb2IpFH2P23QfIU9P4s77EjKc/gDyp2/HhVP+XXvrp199FuMBkAmk1sCaaA3yAeXn7J6UeBkzVkZy11ig//E8JcVJVY7MHoaSC1zW5afDdMO94/LQMG/4jJxab2PxtBSq8=
