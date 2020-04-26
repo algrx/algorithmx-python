@@ -12,7 +12,7 @@
 
 ## Resources
   - <a href="https://algrx.github.io/">Website</a>
-  - <a href="https://algorithmx-python.readthedocs.io/en/latest/">Documentation</a>
+  - <a href="https://algrx.github.io/algorithmx/docs/python/">Documentation</a>
 
 ## Installation
 
