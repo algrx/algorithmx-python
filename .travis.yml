@@ -1,5 +1,9 @@
 language: generic
 
+before_install:
+- git config --global user.email "travis@travis-ci.com"
+- git config --global user.name "Travis CI"
+
 services:
 - docker
 
@@ -8,14 +12,12 @@ script:
 - docker-compose run docs
 - docker-compose up -d notebook
 
-# currently this doesn't work
 deploy:
   provider: script
   script: ./scripts/deploy-docs.sh
-  on:
-    branch: master
+  cleanup: false
 
 env:
   global:
-    # GH_DEPLOY_TOKEN (for algrx/algorithmx)
-    secure: t+WB1hcq52l2UVXNh49gqDfUNTJGQD2sDux1sL6rCOKNs1k1L+E8dRnPGVwP5ndU0n/5W519pO/PHKd6z2xvkx7vLL12hnRmVxRm+CvsIGiQimIhIjW4OF1dMv/NS5GwrMfly0TGDZxuz1QKHRPsQHo2hj0kN+7uNtqULT7ELUiDIJGft3dOOBikIzD7iRRowXoOub0um+JKKIGVKqtw0ZnH3aSLoHSJNwhhOjki5LhfIt7mZSISq9dJrl2+BHzVQ3POi7tkCWrB/mxYTUtRXkUgGf+02C8zuGh+sA2pnATr1uWXR7agqJl3qPG25Oya/Jr85tp0XcPYLrzmkavtQSYi4FQHeuJANSqUbL1/5gR2PE3CVEm2RpleZNk9Tu1Zj34543Q9c8PO/LwmyCGgb6JJhxZ6IpmcKxBGt/r/nCydrM3NMg4fScNVQtjzx/vwJOaKZOmNoBwl4jcchRA840i2DKOZNleCxCIu/Xj7VlikD30qC9f+7Tu/1YvYjdlIOEgPaV7kLhzq/6H2BAnp3bG1BmaxARM9umvhUvQSRhb2IpFH2P23QfIU9P4s77EjKc/gDyp2/HhVP+XXvrp199FuMBkAmk1sCaaA3yAeXn7J6UeBkzVkZy11ig//E8JcVJVY7MHoaSC1zW5afDdMO94/LQMG/4jJxab2PxtBSq8=
+    # GITHUB_TOKEN
+  - secure: "wF5E4ktQzTKuAb5S41vCbP53mqOWGoPAodvA56NeDLT706+2qD5ZLJO+Fts4KzBahqFQ5vzRT1uGqwCk8LBVqTj3lPheSTcCtPdj1kOGj2+HiCkteCDRzhtt+GUT+SzhWrhHGRxtdFTfxw0fIGSsg+I1azo7pJ4goGfFdXjpOvX4n2aR3k9XZufZ0OdwxGEu/oRCSLYE/1RWogjqE/zs+n9Z2wATorl68AIkg+4t61AKxYIyEkX0ULqd3ML8Dgi6B6dx+sDMPujlkuTL7F+zDqydZUyL0qkGCawaJXYxf96hrupY94sPoN6YArZ9lBwsq+Ne+fnsd5KRuVuZv1bmNPYIUNkU1BdGSGuYinMFa2oKSwwQFzisuuZvGCoQYzwyxmOG75fDKwpNjZKnAV+/9BCGcGqsCALoI5++E1HIgqVN+BVuHm+2LiQpdvdfD3e646piwcVffSyrPnueciWmBWq3wKQi3lHhHiX9AFt07OzMQ56dxQXd+jQslNE5QbRuH3aRNYlNkrQgYxfRXP3ZTpzRN4ofE07eVBMebGlUUGU7+g5JziRlXYEqjCGgn0bonTKezK/30acANfvb0MfTpIHqlQEOLIz240CCIAaszIv7usdenRxcDGSbDb/Hu/Vz7IAu0YIjQFA7RK/N2CRUg8j/lugLCqAzz/qYlH0Fl0A="
