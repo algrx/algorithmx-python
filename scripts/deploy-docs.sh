@@ -2,7 +2,8 @@
 rm -rf public && mkdir public
 cd public
 git init
-git remote add origin "https://${GITHUB_TOKEN}@github.com/algrx/algorithmx.git"
+#git remote add origin "https://${GITHUB_TOKEN}@github.com/algrx/algorithmx.git"
+git remote add origin "https://github.com/algrx/algorithmx.git"
 git pull origin gh-pages
 
 # copy

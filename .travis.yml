@@ -14,7 +14,8 @@ script:
 
 deploy:
   provider: script
-  script: ./scripts/deploy-docs.sh
+  #script: ./scripts/deploy-docs.sh
+  script: echo "to manually deploy the docs, run ./scripts/deploy-docs.sh"
   cleanup: false
 
 env:
