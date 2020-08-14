@@ -1,10 +1,14 @@
 # === build js ===
 FROM node:10 as build-js
-COPY ./js /app
 WORKDIR /app
+
+COPY ./js/src ./src
+COPY ./js/tsconfig.json .
+COPY ./js/webpack.config.js .
+COPY ./js/package*.json ./
+
 RUN npm ci
 RUN npm run build
-
 
 # === build ===
 
@@ -17,12 +21,12 @@ ENV PATH /opt/conda/envs/env/bin:$PATH
 
 # copy python sources
 WORKDIR /app
-COPY algorithmx ./algorithmx
-COPY setup.py .
-COPY setupbase.py .
-COPY README.md .
-COPY LICENSE.txt .
-COPY MANIFEST.in .
+COPY ./algorithmx ./algorithmx
+COPY ./setup.py .
+COPY ./setupbase.py .
+COPY ./README.md .
+COPY ./LICENSE.txt .
+COPY ./MANIFEST.in .
 
 # copy built js
 COPY --from=build-js /app/dist/nbextension ./algorithmx/nbextension/static

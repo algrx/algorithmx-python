@@ -1,11 +1,23 @@
 version: "3.7"
 services:
+  build-js:
+    build:
+      context: .
+      target: build-js
+    volumes:
+    - "./js/dist:/app/dist"
+    image: algorithmx-build-js
+    command: npm run build
+
   build:
     build:
       context: .
       target: build
+    depends_on:
+        - build-js
     volumes:
     - "./dist:/app/dist"
+    - "./js/dist:/app/js/dist"
     - "./build:/app/build"
     image: algorithmx-build
     command: conda run -n algorithmx python setup.py build sdist bdist_wheel
@@ -21,14 +33,19 @@ services:
     volumes:
     - "./algorithmx:/app/algorithmx"
     - "./examples:/app/examples"
-    command: conda run -n algorithmx python -u examples/basic_http_server.py
+    command: bash -c "
+        echo 'Running at localhost:5050'
+        && conda run -n algorithmx python -u examples/basic_http_server.py"
 
   docs:
     build:
       context: .
       target: docs
+    depends_on:
+        - build-js
     image: algorithmx-docs
     volumes:
+    - "./js/dist:/app/js/dist"
     - "./docs/build:/app/docs/build"
     command: bash -c "
       conda run -n docs sphinx-build -b html source build

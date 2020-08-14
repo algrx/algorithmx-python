@@ -31,8 +31,7 @@
     "build:labextension": "mkdir -p dist/labextension && cd dist/labextension && npm pack ../..",
     "inject": "cp -r dist/nbextension ../algorithmx/nbextension/static && cp -r dist/labextension ../algorithmx/labextension",
     "clean": "rimraf ../algorithmx/nbextension/static && rimraf ../algorithmx/labextension",
-    "watch": "webpack --watch",
-    "prepublishOnly": "npm run build"
+    "watch": "webpack --watch"
   },
   "dependencies": {
     "@jupyter-widgets/base": "3.0.0",
