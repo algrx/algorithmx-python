@@ -72,7 +72,7 @@ module.exports = [
     entry: './src/index.ts',
     output: {
       filename: 'index.js',
-      path: path.resolve(distPath, 'lib'),
+      path: path.resolve(distPath),
       library: name,
       libraryTarget: 'amd',
       publicPath: publicPath
