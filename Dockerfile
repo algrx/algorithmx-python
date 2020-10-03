@@ -11,7 +11,7 @@ RUN npm ci
 RUN npm run build
 
 # === build python ===
-FROM python:3.6.1 as build
+FROM python:3.7.0 as build
 WORKDIR /app
 
 COPY ./requirements ./requirements/

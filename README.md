@@ -15,25 +15,22 @@
 
 ## Installation
 
-Python 3.6 or higher is required.
-
-AlgorithmX can be installed using pip:
-
-```bash
-pip install algorithmx
+Python 3.7.0 or higher is required. Using pip:  
+```
+python -m pip install algorithmx
 ```
 
 ### Jupyter Widget
 
 In classic Jupyter notebooks, the widget will typically be enabled by default. However, if you installed using pip with notebook version <5.3, you will have to manually enable it by running:
 
-```bash
+```
 jupyter nbextension enable --sys-prefix --py algorithmx
 ```
 
 with the <a href="https://jupyter-notebook.readthedocs.io/en/stable/extending/frontend_extensions.html#installing-and-enabling-extensions">appropriate flag</a>. To enable in JupyterLab, run:
 
-```bash
+```
 jupyter labextension install @jupyter-widgets/jupyterlab-manager
 jupyter labextension install algorithmx-jupyter
 ```
@@ -42,7 +39,7 @@ jupyter labextension install algorithmx-jupyter
 
 If you wish to use the library through a HTTP/WebSocket server, follow the template below:
 
-```python
+```
 import algorithmx
 
 server = algorithmx.http_server(port=5050)
@@ -60,7 +57,7 @@ Be default, the output can be found at `http://localhost:5050/`.
 
 If you are using Jupyter, add the following to a cell:
 
-```python
+```
 import algorithmx
 
 canvas = algorithmx.jupyter_canvas()
@@ -84,7 +81,7 @@ npm run inject
 cd ..
 
 # install dependencies
-find requirements/*.txt -exec python -m pip install {} \;
+find requirements/*.txt -exec python -m pip install -r {} \;
 python -m pip install --no-deps --editable .
 ```
 
@@ -119,3 +116,10 @@ Docker: `docker-compose up --build build`
 Manually: `python setup.py build sdist bdist_wheel`
 
 The bundle can be found in `dist/`.
+
+### Distribute
+
+Set up pre-commit hooks:
+```
+pre-commit install
+```

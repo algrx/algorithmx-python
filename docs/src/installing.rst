@@ -3,11 +3,9 @@
 Installation
 ============
 
-Python 3.6.1 or higher is required.
+Python 3.7.0 or higher is required. Using pip::
 
-AlgorithmX can be installed using pip::
-
-    pip install algorithmx
+    python -m pip install algorithmx
 
 .. _install-jupyter:
 
