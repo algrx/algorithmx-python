@@ -4,7 +4,8 @@ from .Selection import Selection
 from .types import ElementArg, NumExpr
 from .utils import attr_event
 
-S = TypeVar('S', bound='LabelSelection')
+S = TypeVar("S", bound="LabelSelection")
+
 
 class LabelSelection(Selection):
     def text(self: S, text: ElementArg[str]) -> S:
@@ -15,7 +16,9 @@ class LabelSelection(Selection):
         :param text: The text displayed by the label.
         :type text: :data:`~graphics.types.ElementArg`\\[str]
         """
-        self._context.client.dispatch(attr_event(self._context, text, lambda d: {'text': d}))
+        self._context.client.dispatch(
+            attr_event(self._context, text, lambda d: {"text": d})
+        )
         return self
 
     def align(self: S, align: ElementArg[str]) -> S:
@@ -36,7 +39,9 @@ class LabelSelection(Selection):
 
         :type align: :data:`~graphics.types.ElementArg`\\[str]
         """
-        self._context.client.dispatch(attr_event(self._context, align, lambda d: {'align': d}))
+        self._context.client.dispatch(
+            attr_event(self._context, align, lambda d: {"align": d})
+        )
         return self
 
     def pos(self: S, pos: ElementArg[Tuple[NumExpr, NumExpr]]) -> S:
@@ -49,7 +54,9 @@ class LabelSelection(Selection):
         :param pos: An (x, y) tuple describing the position of the label.
         :type pos: :data:`~graphics.types.ElementArg`\\[Tuple[:data:`~graphics.types.NumExpr`, :data:`~graphics.types.NumExpr`]]
         """
-        self._context.client.dispatch(attr_event(self._context, pos, lambda d: {'pos': d}))
+        self._context.client.dispatch(
+            attr_event(self._context, pos, lambda d: {"pos": d})
+        )
         return self
 
     def radius(self: S, radius: ElementArg[NumExpr]) -> S:
@@ -60,7 +67,9 @@ class LabelSelection(Selection):
         :param radius: The polar radius, defined as the distance from the label's base position.
         :type radius: :data:`~graphics.types.ElementArg`\\[:data:`~graphics.types.NumExpr`]
         """
-        self._context.client.dispatch(attr_event(self._context, radius, lambda d: {'radius': d}))
+        self._context.client.dispatch(
+            attr_event(self._context, radius, lambda d: {"radius": d})
+        )
         return self
 
     def angle(self: S, angle: ElementArg[NumExpr]) -> S:
@@ -74,7 +83,9 @@ class LabelSelection(Selection):
         :param angle: The polar angle, in degrees, increasing counter-clockwise from the x-axis.
         :type angle: :data:`~graphics.types.ElementArg`\\[:data:`~graphics.types.NumExpr`]
         """
-        self._context.client.dispatch(attr_event(self._context, angle, lambda d: {'angle': d}))
+        self._context.client.dispatch(
+            attr_event(self._context, angle, lambda d: {"angle": d})
+        )
         return self
 
     def rotate(self: S, rotate: ElementArg[bool]) -> S:
@@ -86,7 +97,9 @@ class LabelSelection(Selection):
         :param rotate: Whether or not the label should rotate.
         :type rotate: :data:`~graphics.types.ElementArg`\\[bool]
         """
-        self._context.client.dispatch(attr_event(self._context, rotate, lambda d: {'rotate': d}))
+        self._context.client.dispatch(
+            attr_event(self._context, rotate, lambda d: {"rotate": d})
+        )
         return self
 
     def color(self: S, color: ElementArg[str]) -> S:
@@ -96,7 +109,9 @@ class LabelSelection(Selection):
         :param color: A CSS color string.
         :type color: :data:`~graphics.types.ElementArg`\\[str]
         """
-        self._context.client.dispatch(attr_event(self._context, color, lambda d: {'color': d}))
+        self._context.client.dispatch(
+            attr_event(self._context, color, lambda d: {"color": d})
+        )
         return self
 
     def font(self: S, font: ElementArg[str]) -> S:
@@ -106,7 +121,9 @@ class LabelSelection(Selection):
         :param font: A CSS font-family string.
         :type font: :data:`~graphics.types.ElementArg`\\[str]
         """
-        self._context.client.dispatch(attr_event(self._context, font, lambda d: {'font': d}))
+        self._context.client.dispatch(
+            attr_event(self._context, font, lambda d: {"font": d})
+        )
         return self
 
     def size(self: S, size: ElementArg[NumExpr]) -> S:
@@ -116,7 +133,9 @@ class LabelSelection(Selection):
         :param size: The size of the label's text, in pixels.
         :type size: :data:`~graphics.types.ElementArg`\\[:data:`~graphics.types.NumExpr`]
         """
-        self._context.client.dispatch(attr_event(self._context, size, lambda d: {'size': d}))
+        self._context.client.dispatch(
+            attr_event(self._context, size, lambda d: {"size": d})
+        )
         return self
 
     def svgattr(self: S, key: str, value: ElementArg[Union[str, int, float, None]]):
@@ -129,5 +148,7 @@ class LabelSelection(Selection):
         :param value: The value of the SVG attribute.
         :type value: :data:`~graphics.types.ElementArg`\\[Union[str, int, float, None]]
         """
-        self._context.client.dispatch(attr_event(self._context, value, lambda d: {'svgattr': {key: d}}))
+        self._context.client.dispatch(
+            attr_event(self._context, value, lambda d: {"svgattr": {key: d}})
+        )
         return self

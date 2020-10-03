@@ -1,10 +1,16 @@
 from threading import Thread
 import os.path as ospath
 
-from .FileServer import FileServer, create_file_server, relative_file_handler, absolute_file_handler
+from .FileServer import (
+    FileServer,
+    create_file_server,
+    relative_file_handler,
+    absolute_file_handler,
+)
 from .CanvasServer import CanvasServer
 from .Client import Client
 from . import CanvasSelection, canvas_selection
+
 
 class Server:
     """
@@ -17,7 +23,9 @@ class Server:
     def __init__(self, file: str, host: str, port: int):
         file_handler = None
         if file is None:
-            file_handler = absolute_file_handler(ospath.abspath(ospath.dirname(__file__)), 'algorithmx.html')
+            file_handler = absolute_file_handler(
+                ospath.abspath(ospath.dirname(__file__)), "algorithmx.html"
+            )
         else:
             file_handler = relative_file_handler(file)
 
@@ -28,7 +36,9 @@ class Server:
         """
         Starts the server on the current threat, blocking all further execution until the server shuts down.
         """
-        websocket_thread = Thread(target=lambda: self._websocket_server.start(), daemon=True)
+        websocket_thread = Thread(
+            target=lambda: self._websocket_server.start(), daemon=True
+        )
         websocket_thread.start()
 
         try:
@@ -42,10 +52,10 @@ class Server:
         """
         self._file_server.shutdown()
 
-    def client(self, name: str = 'output') -> Client:
+    def client(self, name: str = "output") -> Client:
         return Client(self._websocket_server, name)
 
-    def canvas(self, name: str = 'output') -> CanvasSelection:
+    def canvas(self, name: str = "output") -> CanvasSelection:
         """
         Creates a new :class:`~graphics.CanvasSelection` which will dispatch and receive events through a WebSocket
         connected to the server.

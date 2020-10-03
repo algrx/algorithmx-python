@@ -3,9 +3,16 @@ from socketserver import TCPServer, StreamRequestHandler, ThreadingMixIn
 from http.server import BaseHTTPRequestHandler
 import struct
 
-from .websocket import (send_handshake, send_text, read_text,
-    OPCODE, PAYLOAD_LEN, OPCODE_CLOSE_CONN, OPCODE_TEXT
+from .websocket import (
+    send_handshake,
+    send_text,
+    read_text,
+    OPCODE,
+    PAYLOAD_LEN,
+    OPCODE_CLOSE_CONN,
+    OPCODE_TEXT,
 )
+
 
 class WebsocketHandler(StreamRequestHandler):
     client_id: int
@@ -13,7 +20,7 @@ class WebsocketHandler(StreamRequestHandler):
     keep_alive = True
     handshake_done = False
 
-    def __init__(self, socket, addr, server: 'WebsocketServer'):
+    def __init__(self, socket, addr, server: "WebsocketServer"):
         self.server = server
         self.client_id = server.unique_client_id()
         super().__init__(socket, addr, server)
@@ -25,7 +32,7 @@ class WebsocketHandler(StreamRequestHandler):
             header = self.rfile.readline().decode().strip()
             if not header:
                 break
-            head, value = header.split(':', 1)
+            head, value = header.split(":", 1)
             headers[head.lower().strip()] = value.strip()
         return headers
 
@@ -38,10 +45,10 @@ class WebsocketHandler(StreamRequestHandler):
 
     def handshake(self):
         headers = self.read_http_headers()
-        if not headers['upgrade'].lower() == 'websocket':
+        if not headers["upgrade"].lower() == "websocket":
             return
 
-        key = headers['sec-websocket-key']
+        key = headers["sec-websocket-key"]
         self.request.send(send_handshake(key))
         self.handshake_done = True
         self.server.add_client(self)
@@ -62,9 +69,9 @@ class WebsocketHandler(StreamRequestHandler):
 
         elif opcode == OPCODE_TEXT:
             if payload_length == 126:
-                payload_length = struct.unpack('>H', self.rfile.read(2))[0]
+                payload_length = struct.unpack(">H", self.rfile.read(2))[0]
             elif payload_length == 127:
-                payload_length = struct.unpack('>Q', self.rfile.read(8))[0]
+                payload_length = struct.unpack(">Q", self.rfile.read(8))[0]
 
             masks = self.rfile.read(4)
             message = read_text(self.rfile.read(payload_length), masks)
@@ -94,14 +101,14 @@ class WebsocketServer(TCPServer, ThreadingMixIn):
 
     def add_client(self, client: WebsocketHandler):
         self.clients[client.client_id] = client
-    
+
     def remove_client(self, client_id: int):
         if client_id in self.clients:
             del self.clients[client_id]
 
     def start(self):
         self.serve_forever()
-    
+
     def on_receive(self, listener: Callable[[str], Any]):
         self.listener = listener
 

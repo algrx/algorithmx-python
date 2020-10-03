@@ -4,11 +4,12 @@ import json
 from .WebsocketServer import WebsocketServer, create_websocket_server
 from . import ReceiveEvent, DispatchEvent
 
+
 class CanvasServer:
     canvas_listeners: Dict[int, List[Callable[[ReceiveEvent], Any]]] = {}
     websocket_server: WebsocketServer
 
-    def __init__(self, host: str = 'localhost', port: str = 5050):
+    def __init__(self, host: str = "localhost", port: str = 5050):
         self.websocket_server = create_websocket_server(host, port)
         self.websocket_server.on_receive(self.receive)
 
@@ -17,8 +18,8 @@ class CanvasServer:
 
     def receive(self, message: str):
         json_event = json.loads(message)
-        canvas = json_event['canvas']
-        event = json_event['data']
+        canvas = json_event["canvas"]
+        event = json_event["data"]
 
         if canvas in self.canvas_listeners:
             for listener in self.canvas_listeners[canvas]:
@@ -30,6 +31,6 @@ class CanvasServer:
         self.canvas_listeners[canvas].append(listener)
 
     def dispatch_canvas(self, canvas: str, event: DispatchEvent):
-        full_event = { 'canvas': canvas, 'data': event }
+        full_event = {"canvas": canvas, "data": event}
         json_event = json.dumps(full_event)
         self.websocket_server.send_message(json_event)

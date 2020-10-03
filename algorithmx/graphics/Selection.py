@@ -3,10 +3,17 @@ import uuid
 
 from .context import SelectionContext, create_child_context
 from .EventHandler import DispatchEventType
-from .utils import attr_event, queue_event, update_animation, call_element_fn, is_iterable
+from .utils import (
+    attr_event,
+    queue_event,
+    update_animation,
+    call_element_fn,
+    is_iterable,
+)
 from .types import ElementArg, ElementFn
 
-S = TypeVar('S', bound='Selection')
+S = TypeVar("S", bound="Selection")
+
 
 class Selection:
     _context: SelectionContext
@@ -25,10 +32,16 @@ class Selection:
         """
         context = self._context.copy()
         context.data = self._context.ids
-        self._context.client.dispatch(attr_event(context, lambda _, i: i, lambda i: {
-            'visible': True,
-            **(self._context.initattr[i] if self._context.initattr else {})
-        }))
+        self._context.client.dispatch(
+            attr_event(
+                context,
+                lambda _, i: i,
+                lambda i: {
+                    "visible": True,
+                    **(self._context.initattr[i] if self._context.initattr else {}),
+                },
+            )
+        )
         return self.duration(0)
 
     def remove(self: S) -> S:
@@ -38,7 +51,9 @@ class Selection:
         self._context.client.dispatch(attr_event(self._context, None, lambda d: None))
         return self
 
-    def set(self: S, attrs: ElementArg[Dict[str, Any]] = {}, **kwargs: Dict[str, Any]) -> S:
+    def set(
+        self: S, attrs: ElementArg[Dict[str, Any]] = {}, **kwargs: Dict[str, Any]
+    ) -> S:
         """
         Sets one or more custom attributes on all elements in the current selection. The attributes are provided using
         a dictionary, where each (key, value) pair corresponds to the method and argument setting the same attribute.
@@ -60,7 +75,9 @@ class Selection:
         :param kwargs: Custom attributes as keywork arguments.
         :type kwargs: Dict[str, Any]
         """
-        self._context.client.dispatch(attr_event(self._context, attrs, lambda d: {**d, **kwargs}))
+        self._context.client.dispatch(
+            attr_event(self._context, attrs, lambda d: {**d, **kwargs})
+        )
         return self
 
     def visible(self: S, visible: ElementArg[bool]) -> S:
@@ -72,10 +89,12 @@ class Selection:
         :param visible: Whether or not the elements should be visible.
         :type bool: :data:`~graphics.types.ElementArg`\\[bool]
         """
-        self._context.client.dispatch(attr_event(self._context, visible, lambda d: {'visible': d}))
+        self._context.client.dispatch(
+            attr_event(self._context, visible, lambda d: {"visible": d})
+        )
         return self
 
-    def eventQ(self: S, queue: Union[Any, None] = 'default') -> S:
+    def eventQ(self: S, queue: Union[Any, None] = "default") -> S:
         """
         Sets the queue onto which all events triggered by the selection should be added. Each queue handles events
         independently, and all queues execute in parallel. Since queues can be delayed (see :meth:`pause`), this
@@ -104,7 +123,9 @@ class Selection:
         :return: A new instance of the current selection using the specified animation duration.
         """
         context = self._context.copy()
-        context.animation = update_animation(context, seconds, lambda d: {'duration': d})
+        context.animation = update_animation(
+            context, seconds, lambda d: {"duration": d}
+        )
         return self.__class__(context)
 
     def ease(self: S, ease: ElementArg[str]) -> S:
@@ -130,10 +151,12 @@ class Selection:
         :return: A new instance of the current selection using the specified animation ease.
         """
         context = self._context.copy()
-        context.animation = update_animation(context, ease, lambda d: {'ease': d})
+        context.animation = update_animation(context, ease, lambda d: {"ease": d})
         return self.__class__(context)
 
-    def highlight(self: S, seconds: Optional[ElementArg[Union[int, float]]] = None) -> S:
+    def highlight(
+        self: S, seconds: Optional[ElementArg[Union[int, float]]] = None
+    ) -> S:
         """
         Returns a new selection through which all attribute changes are temporary. This is typically used to draw attention
         to a certain element without permanently changing its attributes.
@@ -147,7 +170,9 @@ class Selection:
         context = self._context.copy()
         context.highlight = True
         if seconds is not None:
-            context.animation = update_animation(context, seconds, lambda d: {'linger': d})
+            context.animation = update_animation(
+                context, seconds, lambda d: {"linger": d}
+            )
         return self.__class__(context)
 
     def data(self: S, data: Union[Iterable[Any], ElementFn[Any], None]) -> S:
@@ -168,8 +193,12 @@ class Selection:
         if is_iterable(data):
             data_list = list(data)
             if len(data_list) != len(self._context.ids):
-                raise Exception(('data length ({}) must equal the number of elements'
-                + ' in the selection ({})').format(len(data_list), len(self._context.ids)))
+                raise Exception(
+                    (
+                        "data length ({}) must equal the number of elements"
+                        + " in the selection ({})"
+                    ).format(len(data_list), len(self._context.ids))
+                )
         else:
             for i in range(self._context.ids):
                 if callable(data) and self._context.data is not None:
@@ -188,14 +217,16 @@ class Selection:
         :param seconds: The duration of the pause, in seconds.
         :type seconds: Union[int, float]
         """
-        self._context.client.dispatch({
-            'type': DispatchEventType.Pause,
-            'queue': self._context.queue,
-            'data': {'duration': seconds}
-        })
+        self._context.client.dispatch(
+            {
+                "type": DispatchEventType.Pause,
+                "queue": self._context.queue,
+                "data": {"duration": seconds},
+            }
+        )
         return self
 
-    def stop(self: S, queue: Any = 'default') -> S:
+    def stop(self: S, queue: Any = "default") -> S:
         """
         Stops the execution of all scheduled events on the given event queue.
         Note that this will still be added as an event onto the current queue.
@@ -203,7 +234,7 @@ class Selection:
         :param queue: The ID of the queue to stop, which will be converted to a string.
         :type queue: Any
         """
-        self._context.client.dispatch(queue_event(self._context, 'stop', queue))
+        self._context.client.dispatch(queue_event(self._context, "stop", queue))
         return self
 
     def stopall(self: S) -> S:
@@ -211,10 +242,10 @@ class Selection:
         Stops the execution of all scheduled events on all event queues.
         Note this will still be added as an event onto the current queue.
         """
-        self._context.client.dispatch(queue_event(self._context, 'stop', None))
+        self._context.client.dispatch(queue_event(self._context, "stop", None))
         return self
 
-    def start(self: S, queue: Any = 'default') -> S:
+    def start(self: S, queue: Any = "default") -> S:
         """
         Starts/resumes the execution of all scheduled events on the given event queue.
         Note this will still be added as an event onto the current queue.
@@ -222,7 +253,7 @@ class Selection:
         :param queue: The name of the queue to start, or an iterable container of names. Defaults to "default".
         :type queue: Any
         """
-        self._context.client.dispatch(queue_event(self._context, 'start', queue))
+        self._context.client.dispatch(queue_event(self._context, "start", queue))
         return self
 
     def startall(self: S) -> S:
@@ -230,10 +261,10 @@ class Selection:
         Starts/resumes the execution of all scheduled events on all event queues.
         Note that this will still be added as an event onto the current queue.
         """
-        self._context.client.dispatch(queue_event(self._context, 'start', None))
+        self._context.client.dispatch(queue_event(self._context, "start", None))
         return self
 
-    def cancel(self: S, queue: Any = 'default') -> S:
+    def cancel(self: S, queue: Any = "default") -> S:
         """
         Cancels all scheduled events on the given event queue.
         Note this will still be added as an event onto the current queue.
@@ -241,7 +272,7 @@ class Selection:
         :param queue: The name of the queue to cancel, or an iterable container of names. Defaults to "default".
         :type queue: Any
         """
-        self._context.client.dispatch(queue_event(self._context, 'cancel', queue))
+        self._context.client.dispatch(queue_event(self._context, "cancel", queue))
         return self
 
     def cancelall(self: S) -> S:
@@ -249,7 +280,7 @@ class Selection:
         Cancels all scheduled events on all event queues.
         Note that this will still be added as an event onto the current queue.
         """
-        self._context.client.dispatch(queue_event(self._context, 'cancel', None))
+        self._context.client.dispatch(queue_event(self._context, "cancel", None))
         return self
 
     def broadcast(self: S, message: str) -> S:
@@ -261,11 +292,13 @@ class Selection:
         :param message: The message.
         :type message: str
         """
-        self._context.client.dispatch({
-            'type': DispatchEventType.Broadcast,
-            'queue': self._context.queue,
-            'data': {'message': 'broadcast-' + message}
-        })
+        self._context.client.dispatch(
+            {
+                "type": DispatchEventType.Broadcast,
+                "queue": self._context.queue,
+                "data": {"message": "broadcast-" + message},
+            }
+        )
         return self
 
     def listen(self: S, message: str, on_receive: Callable) -> S:
@@ -281,7 +314,7 @@ class Selection:
         :param on_receive: The function to call when the message is received.
         :type on_receive: Callable
         """
-        self._context.listeners['broadcast-' + message] = on_receive
+        self._context.listeners["broadcast-" + message] = on_receive
         return self
 
     def callback(self: S, on_callback: Callable) -> S:
@@ -292,11 +325,13 @@ class Selection:
         :param on_callback: The function to call when the callback event is processed by the event queue.
         :type on_callback: Callable
         """
-        message = 'callback-' + str(uuid.uuid4())
+        message = "callback-" + str(uuid.uuid4())
         self._context.listeners[message] = on_callback
-        self._context.client.dispatch({
-            'type': DispatchEventType.Broadcast,
-            'queue': self._context.queue,
-            'data': {'message': message}
-        })
+        self._context.client.dispatch(
+            {
+                "type": DispatchEventType.Broadcast,
+                "queue": self._context.queue,
+                "data": {"message": message},
+            }
+        )
         return self

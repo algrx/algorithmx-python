@@ -6,4 +6,3 @@ except:
     CavasSelection = Any
 
 from .utils import add_graph
-

@@ -7,7 +7,10 @@ try:
 except:
     is_directed = lambda: False
 
-def add_graph(canvas: CanvasSelection, graph, weight: Union[str, None] = 'weight') -> CanvasSelection:
+
+def add_graph(
+    canvas: CanvasSelection, graph, weight: Union[str, None] = "weight"
+) -> CanvasSelection:
     """
     Adds all nodes and edges from a NetworkX graph to the given canvas.
     Edges will automatically set the :meth:`~graphics.EdgeSelection.directed`

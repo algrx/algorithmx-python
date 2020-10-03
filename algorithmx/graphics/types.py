@@ -1,6 +1,6 @@
 from typing import Dict, Union, Iterable, Callable, TypeVar, Any
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 ElementFn = Union[Callable[[Any], T], Callable[[Any, int], T]]
 """

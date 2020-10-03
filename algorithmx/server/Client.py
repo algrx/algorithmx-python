@@ -3,6 +3,7 @@ from .CanvasServer import CanvasServer
 from . import EventHandler, DispatchEvent, ReceiveEvent
 from . import CanvasSelection, canvas_selection
 
+
 class Client(EventHandler):
     _server: CanvasServer
     _canvas: str

@@ -6,7 +6,8 @@ from .context import create_child_context
 from .types import ElementArg, NumExpr
 from .utils import attr_event, update_animation
 
-S = TypeVar('S', bound='EdgeSelection')
+S = TypeVar("S", bound="EdgeSelection")
+
 
 class EdgeSelection(Selection):
     def traverse(self: S, source: Optional[ElementArg[Any]] = None) -> S:
@@ -22,13 +23,19 @@ class EdgeSelection(Selection):
         :type source: Optional[:data:`~graphics.types.ElementArg`\\[Any]
         """
         context = self._context.copy()
-        new_source = lambda e, i: self._context.initattr[i]['source'] if source is None else source
-        context.animation = update_animation(context, new_source,
-            lambda d: {'type': 'traverse', 'data': {'source': str(d)}})
+        new_source = (
+            lambda e, i: self._context.initattr[i]["source"]
+            if source is None
+            else source
+        )
+        context.animation = update_animation(
+            context,
+            new_source,
+            lambda d: {"type": "traverse", "data": {"source": str(d)}},
+        )
         return self.__class__(context)
 
-
-    def label(self, id: Any = 'weight') -> LabelSelection:
+    def label(self, id: Any = "weight") -> LabelSelection:
         """
         Selects a single label, attached to the edge, by its ID.
 
@@ -48,7 +55,9 @@ class EdgeSelection(Selection):
 
         :return: A new selection corresponding to the given labels.
         """
-        label_context = create_child_context(parent=self._context, name='labels', ids=[str(k) for k in ids], data=None)
+        label_context = create_child_context(
+            parent=self._context, name="labels", ids=[str(k) for k in ids], data=None
+        )
         return LabelSelection(label_context)
 
     def directed(self: S, directed: ElementArg[bool]) -> S:
@@ -58,7 +67,9 @@ class EdgeSelection(Selection):
         :param directed: True if the edge should be directed, false otherwise.
         :type directed: :data:`~graphics.types.ElementArg`\\[bool]
         """
-        self._context.client.dispatch(attr_event(self._context, directed, lambda d: {'directed': d}))
+        self._context.client.dispatch(
+            attr_event(self._context, directed, lambda d: {"directed": d})
+        )
         return self
 
     def length(self: S, length: ElementArg[NumExpr]) -> S:
@@ -68,7 +79,9 @@ class EdgeSelection(Selection):
         :param length: The length of the edge.
         :type length: :data:`~graphics.types.ElementArg`\\[:data:`~graphics.types.NumExpr`]
         """
-        self._context.client.dispatch(attr_event(self._context, length, lambda d: {'length': d}))
+        self._context.client.dispatch(
+            attr_event(self._context, length, lambda d: {"length": d})
+        )
         return self
 
     def thickness(self: S, thickness: ElementArg[NumExpr]) -> S:
@@ -78,7 +91,9 @@ class EdgeSelection(Selection):
         :param thickness: The thickness of the edge.
         :type thickness: :data:`~graphics.types.ElementArg`\\[:data:`~graphics.types.NumExpr`]
         """
-        self._context.client.dispatch(attr_event(self._context, thickness, lambda d: {'thickness': d}))
+        self._context.client.dispatch(
+            attr_event(self._context, thickness, lambda d: {"thickness": d})
+        )
         return self
 
     def color(self: S, color: ElementArg[str]) -> S:
@@ -89,7 +104,9 @@ class EdgeSelection(Selection):
         :param color: A CSS color string.
         :type color: :data:`~graphics.types.ElementArg`\\[str]
         """
-        self._context.client.dispatch(attr_event(self._context, color, lambda d: {'color': d}))
+        self._context.client.dispatch(
+            attr_event(self._context, color, lambda d: {"color": d})
+        )
         return self
 
     def flip(self: S, flip: ElementArg[bool]) -> S:
@@ -100,7 +117,9 @@ class EdgeSelection(Selection):
         :param flip: True if the edge should flip automatically, false otherwise.
         :type flip: :data:`~graphics.types.ElementArg`\\[bool]
         """
-        self._context.client.dispatch(attr_event(self._context, flip, lambda d: {'flip': d}))
+        self._context.client.dispatch(
+            attr_event(self._context, flip, lambda d: {"flip": d})
+        )
         return self
 
     def curve(self: S, curve: ElementArg[str]) -> S:
@@ -122,7 +141,9 @@ class EdgeSelection(Selection):
 
         :type curve: :data:`~graphics.types.ElementArg`\\[str]
         """
-        self._context.client.dispatch(attr_event(self._context, curve, lambda d: {'curve': d}))
+        self._context.client.dispatch(
+            attr_event(self._context, curve, lambda d: {"curve": d})
+        )
         return self
 
     def path(self: S, path: ElementArg[Iterable[Tuple[NumExpr, NumExpr]]]) -> S:
@@ -136,7 +157,9 @@ class EdgeSelection(Selection):
         :param path: An iterable container of (x, y) tuples.
         :type path: :data:`~graphics.types.ElementArg`\\[Iterable[Tuple[:data:`~graphics.types.NumExpr`, :data:`~graphics.types.NumExpr`]]]
         """
-        self._context.client.dispatch(attr_event(self._context, path, lambda d: {'path': list(d)}))
+        self._context.client.dispatch(
+            attr_event(self._context, path, lambda d: {"path": list(d)})
+        )
         return self
 
     def svgattr(self: S, key: str, value: ElementArg[Union[str, int, float, None]]):
@@ -149,5 +172,7 @@ class EdgeSelection(Selection):
         :param value: The value of the SVG attribute.
         :type value: :data:`~graphics.types.ElementArg`\\[Union[str, int, float, None]]
         """
-        self._context.client.dispatch(attr_event(self._context, value, lambda d: {'svgattr': {key: d}}))
+        self._context.client.dispatch(
+            attr_event(self._context, value, lambda d: {"svgattr": {key: d}})
+        )
         return self
