@@ -17,10 +17,9 @@ services:
         - build-js
     volumes:
     - "./dist:/app/dist"
-    - "./js/dist:/app/js/dist"
     - "./build:/app/build"
     image: algorithmx-build
-    command: conda run -n algorithmx python setup.py build sdist bdist_wheel
+    command: python setup.py build sdist bdist_wheel
 
   http-server:
     build:
@@ -33,9 +32,9 @@ services:
     volumes:
     - "./algorithmx:/app/algorithmx"
     - "./examples:/app/examples"
-    command: bash -c "
+    command: bash -ci "
         echo 'Running at localhost:5050'
-        && conda run -n algorithmx python -u examples/basic_http_server.py"
+        && python -u examples/basic_http_server.py"
 
   docs:
     build:
@@ -45,11 +44,9 @@ services:
         - build-js
     image: algorithmx-docs
     volumes:
-    - "./js/dist:/app/js/dist"
     - "./docs/build:/app/docs/build"
-    command: bash -c "
-      conda run -n docs sphinx-build -b html source build
-      && conda run -n docs python -m pytest_check_links -o links-ext=.md -o testpaths=."
+    - "./docs/cache:/app/docs/cache"
+    command: ./build.sh
 
   notebook:
     build:
@@ -61,7 +58,7 @@ services:
     volumes:
     - "./examples:/app/examples"
     tty: true
-    command: bash -ci "jupyter notebook --allow-root --ip=0.0.0.0 --port=8888"
+    command: bash -ci "python -m jupyter notebook --allow-root --ip=0.0.0.0 --port=8888"
 
   jupyter-lab:
     build:

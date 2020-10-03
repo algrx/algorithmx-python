@@ -20,10 +20,6 @@ import shlex
 import subprocess
 import sys
 
-# MODIFIED: Added readthedocs detection
-def in_read_the_docs():
-    return os.environ.get('READTHEDOCS') == 'True'
-
 
 # BEFORE importing distutils, remove MANIFEST. distutils doesn't properly
 # update it when the contents of directories change.
@@ -179,9 +175,6 @@ def create_cmdclass(prerelease_cmd=None, package_data_spec=None,
     handle_files = _get_file_handler(package_data_spec, data_files_spec)
 
     if 'bdist_egg' in sys.argv:
-        egg = wrapper(bdist_egg, strict=True)
-    # MODIFIED: Enable setup.py install in readthedocs so that files can be modified (like pip install -e)
-    elif in_read_the_docs():
         egg = wrapper(bdist_egg, strict=True)
     else:
         egg = bdist_egg_disabled

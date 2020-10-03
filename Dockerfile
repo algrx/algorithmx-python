@@ -10,34 +10,33 @@ COPY ./js/package*.json ./
 RUN npm ci
 RUN npm run build
 
-# === build ===
-
-# conda dependencies
-FROM continuumio/miniconda3 as build
-COPY ./environment.yml /tmp/environment.yml
-RUN conda env create --file /tmp/environment.yml --name algorithmx
-RUN echo "source activate algorithmx" > ~/.bashrc
-ENV PATH /opt/conda/envs/env/bin:$PATH
-
-# copy python sources
+# === build python ===
+FROM python:3.6.1 as build
 WORKDIR /app
-COPY ./algorithmx ./algorithmx
+
+COPY ./requirements ./requirements/
+COPY ./algorithmx ./algorithmx/
 COPY ./setup.py .
 COPY ./setupbase.py .
 COPY ./README.md .
 COPY ./LICENSE.txt .
 COPY ./MANIFEST.in .
 
+# install python dependencies
+RUN python -m pip install --upgrade pip \
+&& python -m pip install -r /app/requirements/common.txt -r /app/requirements/dev.txt
+
 # copy built js
 COPY --from=build-js /app/dist/nbextension ./algorithmx/nbextension/static
 COPY --from=build-js /app/dist/labextension ./algorithmx/labextension
 
-# install module
-RUN conda run -n algorithmx pip install --no-deps --editable .
-
 
 # === example server ===
-from build as http-server
+FROM build as example-server
+
+# install optional dependencies and the module itself
+RUN python -m pip install -r /app/requirements/optional.txt \
+&& python -m pip install --no-deps .
 
 EXPOSE 5050
 EXPOSE 5051
@@ -45,23 +44,27 @@ EXPOSE 5051
 
 # === docs ===
 FROM build as docs
-COPY ./docs/environment.yml /tmp/environment.yml
-RUN conda create --name docs --clone algorithmx
-RUN conda env update --file /tmp/environment.yml --name docs
+WORKDIR /app
 
-COPY docs /app/docs
+# install dependencies and the module itself
+RUN python -m pip install -r /app/requirements/docs.txt \
+&& python -m pip install --no-deps .
+
 WORKDIR /app/docs
-COPY algorithmx/_version.py /app/algorithmx/_version.py
-COPY --from=build-js /app/dist/docs ./source/_static
+COPY docs ./
+
+# copy built js
+COPY --from=build-js /app/dist/docs ./src/_static
 
 
-# === install jupyter plugin ===
-FROM build as install-jupyter
+# === jupyter notebook ===
+FROM build as jupyter-notebook
 
-# install jupyter notebook plugin
+# install and enable jupyter plugin
+RUN python -m jupyter nbextension install --symlink --sys-prefix --py algorithmx \
+&& python -m jupyter nbextension enable --sys-prefix --py algorithmx
+
 EXPOSE 8888
-RUN conda run -n algorithmx jupyter nbextension install --symlink --sys-prefix --py algorithmx
-RUN conda run -n algorithmx jupyter nbextension enable --sys-prefix --py algorithmx
 
 
 # === install jupyter lab plugin ===

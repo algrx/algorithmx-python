@@ -1,0 +1,7 @@
+sphinx==3.2.1
+recommonmark==0.6.0
+sphinx-rtd-theme==0.5.0
+jupyter-sphinx==0.3.2
+networkx==2.4
+pytest-check-links==4.3.3
+requests-cache==0.5.1

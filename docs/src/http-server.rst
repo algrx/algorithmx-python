@@ -45,8 +45,6 @@ customize this further, you can tell the server to open a different HTML file, a
 Use the provided HTML file as a guide for creating your own.
 
 
-.. automodule:: algorithmx
-
 .. autofunction:: algorithmx.http_server
 
 .. autoclass:: algorithmx.server.Server

@@ -31,6 +31,4 @@ can also enable start/stop/restart buttons:
     canvas = algorithmx.jupyter_canvas(buttons=True)
 
 
-.. automodule:: algorithmx
-
 .. autofunction:: algorithmx.jupyter_canvas

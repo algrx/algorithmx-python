@@ -3,7 +3,7 @@
 Installation
 ============
 
-Python 3.6 or higher is required.
+Python 3.6.1 or higher is required.
 
 AlgorithmX can be installed using pip::
 

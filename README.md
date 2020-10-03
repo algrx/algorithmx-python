@@ -73,39 +73,31 @@ display(canvas)
 
 ## Development
 
-### Install
+### Manual install
 
-If you aren't using docker, you can install the package locally:
+Make sure you have Python 3.6.1 of higher, then run:
 ```
+# build js
 cd js
 npm run build
 npm run inject
 cd ..
 
-pip install --no-deps --editable .
+# install dependencies
+find requirements/*.txt -exec python -m pip install {} \;
+python -m pip install --no-deps --editable .
 ```
 
 ### Run HTTP Server
 
-With docker:
-```
-docker-compose up http-server
-```
+Docker: `Docker-compose up http-server`
+Manually: `python -u examples/basic_http_server.py`
 
-Manually:
-```
-python -u examples/basic_http_server.py
-```
-
-Then, in both cases, open `localhost:5050` in a browser.
+Finally, open `localhost:5050` in a browser.
 
 ### Run Notebook
 
-With docker:
-```
-docker-compose up notebook
-```
-You will need to follow the link which appears in the output.
+Docker: `docker-compose up notebook`
 
 Manually:
 ```
@@ -114,22 +106,16 @@ jupyter nbextension enable --sys-prefix --py algorithmx
 jupyter notebook 
 ```
 
-Then, in both cases, navigate to `examples/basic.ipynb`.
+Finally, try opening `examples/basic.ipynb`.
 
 ### Build package
+
+To clean the previous builds:
 ```
 rm -rf build dist
 ```
 
-With docker:
+Docker: `docker-compose up --build build`
+Manually: `python setup.py build sdist bdist_wheel`
 
-```
-docker-compose up --build build
-```
-
-Manually:
-```
-python setup.py build sdist bdist_wheel
-```
-
-In both cases, the bundle can be found in `dist/`.
+The bundle can be found in `dist/`.

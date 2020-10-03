@@ -1,13 +1,15 @@
-.git/
-.gitignore
 dist/
 build/
-*.egg-info/
-**/.ipynb_checkpoints/
-**/__pycache__/
-**/*.pyc
+cache/
 
 js/node_modules/
 algorithmx/nbextension/static/
-docs/source/_static
-docs/build
+docs/src/_static/
+docs/jupyer_execute/
+
+.git/
+.gitignore
+*.egg-info/
+*.pyc
+.ipynb_checkpoints/
+__pycache__/

@@ -1,7 +1,5 @@
 .. _selections:
 
-.. automodule:: algorithmx
-
 Selections
 ==========
 

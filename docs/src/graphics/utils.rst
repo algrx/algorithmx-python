@@ -21,6 +21,4 @@ NetworkX graphs can be directly added to a canvas in the following way:
    
    add_graph(canvas, G)
 
-.. automodule:: algorithmx.networkx
-
 .. autofunction:: algorithmx.networkx.add_graph

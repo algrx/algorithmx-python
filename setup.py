@@ -12,8 +12,12 @@ ensure_python('>=3.6')
 
 name = 'algorithmx'
 version = get_version(pjoin(name, '_version.py'))
-with open('README.md', 'r') as fh:
-    long_description = fh.read()
+
+with open('README.md', 'r') as f:
+    long_description = f.read()
+
+with open('requirements/common.txt', 'r') as f:
+    requirements = f.readlines()
 
 js_path = pjoin(HERE, 'js')
 nb_path = pjoin(HERE, name, 'nbextension', 'static')
@@ -42,7 +46,7 @@ data_files_spec = [
     ('etc/jupyter/nbconfig/notebook.d', HERE, 'algorithmx-jupyter -config.json')
 ]
 
-cmdclass = create_cmdclass('js' if js_exists else None,
+cmdclass = create_cmdclass(None, # 'js' if js_exists else None,
     package_data_spec=package_data_spec,
     data_files_spec=data_files_spec
 )
@@ -82,26 +86,8 @@ setup_args = dict(
         'Framework :: Jupyter'
     ],
     include_package_data = True,
-    install_requires = [
-        'ipywidgets>=7.0.0'
-    ],
-    extras_require = {
-        'networkx': ['networkx'],
-        'test': [
-            'pytest>=3.3.0',
-            'pytest-cov<2.6.0',
-        ],
-        'docs': [
-            'sphinx>=1.5',
-            'recommonmark',
-            'sphinx_rtd_theme',
-            'nbsphinx>=0.2.13',
-            'jupyter_sphinx',
-            'pytest_check_links',
-            'attrs>=17.4.0',
-            'networkx>=2.4',
-        ]
-    },
+    install_requires = requirements,
+    extras_require = {},
     entry_points = {}
 )
 

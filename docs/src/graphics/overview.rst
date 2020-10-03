@@ -1,7 +1,5 @@
 .. _graphics-overview:
 
-.. automodule:: algorithmx
-
 Overview
 ========
 
