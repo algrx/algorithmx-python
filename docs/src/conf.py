@@ -120,7 +120,7 @@ def signature_callback(app, what, name, obj, options, signature, return_annotati
 
 def setup(app):
     app.setup_extension("jupyter_sphinx")
-    app.connect("autodoc-process-signature", signature_callback)
+    # app.connect("autodoc-process-signature", signature_callback)
 
     # add js dependencies
     def add_scripts(app):
