@@ -1,73 +1,64 @@
 version: "3.7"
 services:
-  build-js:
     build:
-      context: .
-      target: build-js
-    volumes:
-    - "./js/dist:/app/dist"
-    image: algorithmx-build-js
-    command: npm run build
+        build:
+            context: .
+            target: setup
+        volumes:
+          - "./dist:/app/dist"
+          - "./build:/app/build"
+          - "./tests:/app/tests"
+        image: algorithmx-build
+        command: bash -c "
+            python -m mypy .
+            && python -m pytest tests -vv
+            && python setup.py build sdist bdist_wheel"
 
-  build:
-    build:
-      context: .
-      target: build
-    depends_on:
-        - build-js
-    volumes:
-    - "./dist:/app/dist"
-    - "./build:/app/build"
-    image: algorithmx-build
-    command: python setup.py build sdist bdist_wheel
+    http-server:
+        build:
+            context: .
+            target: http-server
+        image: algorithmx-http-server
+        ports:
+            - "5050:5050"
+            - "5051:5051"
+        volumes:
+            - "./algorithmx:/app/algorithmx"
+            - "./examples:/app/examples"
+        command: bash -ci "
+            echo 'Running at localhost:5050'
+            && python -u examples/basic_http_server.py"
 
-  http-server:
-    build:
-      context: .
-      target: http-server
-    image: algorithmx-http-server
-    ports:
-    - "5050:5050"
-    - "5051:5051"
-    volumes:
-    - "./algorithmx:/app/algorithmx"
-    - "./examples:/app/examples"
-    command: bash -ci "
-        echo 'Running at localhost:5050'
-        && python -u examples/basic_http_server.py"
+    docs:
+        build:
+            context: .
+            target: docs
+        image: algorithmx-docs
+        volumes:
+          - "./docs/build:/app/docs/build"
+          - "./docs/cache:/app/docs/cache"
+        command: ./build.sh
 
-  docs:
-    build:
-      context: .
-      target: docs
-    depends_on:
-        - build-js
-    image: algorithmx-docs
-    volumes:
-    - "./docs/build:/app/docs/build"
-    - "./docs/cache:/app/docs/cache"
-    command: ./build.sh
+    notebook:
+        build:
+            context: .
+            target: setup-jupyter
+        image: algorithmx-notebook
+        ports:
+          - "8888:8888"
+        volumes:
+          - "./examples:/app/examples"
+        tty: true
+        command: bash -ci "python -m jupyter notebook --allow-root --ip=0.0.0.0 --port=8888"
 
-  notebook:
-    build:
-      context: .
-      target: install-jupyter
-    image: algorithmx-notebook
-    ports:
-    - "8888:8888"
-    volumes:
-    - "./examples:/app/examples"
-    tty: true
-    command: bash -ci "python -m jupyter notebook --allow-root --ip=0.0.0.0 --port=8888"
-
-  jupyter-lab:
-    build:
-      context: .
-      target: install-jupyter-lab
-    image: algorithmx-jupyter-lab
-    ports:
-    - "8888:8888"
-    volumes:
-    - "./examples:/app/examples"
-    tty: true
-    command: bash -ci "jupyter lab --allow-root --ip=0.0.0.0 --port=8888"
+    jupyter-lab:
+        build:
+            context: .
+            target: setup-jupyter-lab
+        image: algorithmx-jupyter-lab
+        ports:
+          - "8888:8888"
+        volumes:
+          - "./examples:/app/examples"
+        tty: true
+        command: bash -ci "jupyter lab --allow-root --ip=0.0.0.0 --port=8888"

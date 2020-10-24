@@ -17,7 +17,7 @@
 
 Python 3.7.0 or higher is required. Using pip:  
 ```
-python -m pip install algorithmx
+pip install algorithmx
 ```
 
 ### Jupyter Widget
@@ -105,15 +105,17 @@ jupyter notebook
 
 Finally, try opening `examples/basic.ipynb`.
 
-### Build package
+### Build and test package
 
-To clean the previous builds:
-```
-rm -rf build dist
-```
+Clean any previous builds with `rm -rf build dist`.
 
 Docker: `docker-compose up --build build`
-Manually: `python setup.py build sdist bdist_wheel`
+Manually:
+```
+python -m mypy .
+python -m pytest tests -vv
+python setup.py build sdist bdist_wheel`
+```
 
 The bundle can be found in `dist/`.
 

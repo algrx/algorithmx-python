@@ -10,8 +10,8 @@ COPY ./js/package*.json ./
 RUN npm ci
 RUN npm run build
 
-# === build python ===
-FROM python:3.7.0 as build
+# === setup python ===
+FROM python:3.7.0 as setup
 WORKDIR /app
 
 COPY ./requirements ./requirements/
@@ -31,8 +31,8 @@ COPY --from=build-js /app/dist/nbextension ./algorithmx/nbextension/static
 COPY --from=build-js /app/dist/labextension ./algorithmx/labextension
 
 
-# === example server ===
-FROM build as example-server
+# === http server ===
+FROM setup as http-server
 
 # install optional dependencies and the module itself
 RUN python -m pip install -r /app/requirements/optional.txt \
@@ -43,7 +43,7 @@ EXPOSE 5051
 
 
 # === docs ===
-FROM build as docs
+FROM setup as setup-docs
 WORKDIR /app
 
 # install dependencies and the module itself
@@ -58,7 +58,7 @@ COPY --from=build-js /app/dist/docs ./src/_static
 
 
 # === jupyter notebook ===
-FROM build as jupyter-notebook
+FROM setup as setup-jupyter
 
 # install and enable jupyter plugin
 RUN python -m jupyter nbextension install --symlink --sys-prefix --py algorithmx \
@@ -68,7 +68,7 @@ EXPOSE 8888
 
 
 # === install jupyter lab plugin ===
-FROM install-jupyter as install-jupyter-lab
+FROM setup-jupyter as install-jupyter-lab
 
 # install nodejs
 RUN apt-get update
