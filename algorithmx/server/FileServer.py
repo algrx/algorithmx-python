@@ -10,7 +10,7 @@ class FileRequestHandler(SimpleHTTPRequestHandler):
         pass
 
 
-def relative_file_handler(file: str) -> FileRequestHandler:
+def relative_file_handler(file: str) -> Type[FileRequestHandler]:
     class Handler(FileRequestHandler):
         def do_GET(self):
             if self.path == "/":
@@ -20,7 +20,7 @@ def relative_file_handler(file: str) -> FileRequestHandler:
     return Handler
 
 
-def absolute_file_handler(absolute_path: str, file: str) -> FileRequestHandler:
+def absolute_file_handler(absolute_path: str, file: str) -> Type[FileRequestHandler]:
     class Handler(FileRequestHandler):
         def do_GET(self):
             self.send_response(200)
@@ -45,6 +45,7 @@ class FileServer(TCPServer):
         self.serve_forever()
 
 
-def create_file_server(handler: FileRequestHandler, host: str, port: int) -> FileServer:
-    server = FileServer((host, port), handler)
-    return server
+def create_file_server(
+    handler: Type[FileRequestHandler], host: str, port: int
+) -> FileServer:
+    return FileServer((host, port), handler)

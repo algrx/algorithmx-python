@@ -1,4 +1,4 @@
-from typing import List, Dict, Callable, Any
+from typing import List, Dict, Callable, Optional, Any
 from socketserver import TCPServer, StreamRequestHandler, ThreadingMixIn
 from http.server import BaseHTTPRequestHandler
 import struct
@@ -92,7 +92,7 @@ class WebsocketServer(TCPServer, ThreadingMixIn):
     clients: Dict[int, WebsocketHandler] = {}
     client_id_counter = 0
 
-    listener: Callable[[str], Any] = None
+    receive_callback: Optional[Callable[[str], Any]] = None
 
     def unique_client_id(self) -> int:
         unique_id = self.client_id_counter
@@ -109,14 +109,14 @@ class WebsocketServer(TCPServer, ThreadingMixIn):
     def start(self):
         self.serve_forever()
 
-    def on_receive(self, listener: Callable[[str], Any]):
+    def onreceive(self, listener: Callable[[str], Any]):
         self.listener = listener
 
-    def receive_message(self, message: str, client_id: int):
-        if self.listener is not None:
-            self.listener(message)
+    def receive(self, message: str, client_id: int):
+        if self.receive_callback is not None:
+            self.receive_callback(message)
 
-    def send_message(self, message: str):
+    def dispatch(self, message: str):
         for client in self.clients.values():
             client.send_message(message)
 

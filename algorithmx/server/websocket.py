@@ -15,7 +15,7 @@ OPCODE_TEXT = 0x1
 OPCODE_CLOSE_CONN = 0x8
 
 
-def send_handshake(key: str) -> bytearray:
+def send_handshake(key: str) -> bytes:
     full_key = (key + WS_MAGIC_STRING).encode("utf-8")
     resp_key = base64.standard_b64encode(hashlib.sha1(full_key).digest()).decode(
         "utf-8"

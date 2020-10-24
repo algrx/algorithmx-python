@@ -1,3 +1,2 @@
-from ..graphics import EventHandler, ReceiveEvent, DispatchEvent
-from ..graphics import CanvasSelection, canvas_selection
-from .Server import Server
+from ..api import Canvas, DispatchEvent, ReceiveEvent
+from .CanvasServer import CanvasServer
