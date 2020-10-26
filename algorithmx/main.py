@@ -1,5 +1,5 @@
 from .server import CanvasServer
-from .jupyter import JupyterClient, JupyterCanvas
+from .jupyter import JupyterCanvas
 from .api import Canvas
 
 
@@ -26,10 +26,6 @@ def http_server(
     return CanvasServer(file, host, port)
 
 
-def jupyter_client(buttons: bool = False) -> JupyterClient:
-    return JupyterClient(buttons=buttons)
-
-
 def jupyter_canvas(buttons: bool = False) -> JupyterCanvas:
     """Creates a new :class:`~api.Canvas` which will dispatch and receive
     events through a Jupyter widget, and which can be displayed using the IPython
@@ -37,4 +33,4 @@ def jupyter_canvas(buttons: bool = False) -> JupyterCanvas:
 
     By default, the canvas size is (400, 250), and requires the ``ctrl``/``cmd`` to be
     held down while zooming."""
-    return jupyter_client(buttons=buttons).canvas()
+    return JupyterCanvas(buttons=buttons)

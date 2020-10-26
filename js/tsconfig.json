@@ -1,17 +1,18 @@
 {
-  "compilerOptions": {
-    "declaration": true,
-    "esModuleInterop": true,
-    "lib": ["es2015", "dom"],
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "noEmitOnError": true,
-    "noUnusedLocals": true,
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "strict": true,
-    "target": "es2015",
-    "declarationDir": "dist/types"
-  },
-  "include": ["src/*"]
+    "compilerOptions": {
+        "declarationDir": "dist/types",
+        "declaration": true,
+        "esModuleInterop": true,
+        "lib": ["es2015", "dom"],
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "noEmitOnError": true,
+        "noUnusedLocals": true,
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "strict": true,
+        "target": "es2015"
+    },
+    "include": ["src/**/*.ts"]
 }

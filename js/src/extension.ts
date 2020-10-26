@@ -1,13 +1,15 @@
-;(window as any).__webpack_public_path__ = document.querySelector('body')!.getAttribute('data-base-url') + 'nbextensions/algorithmx'
+window.__webpack_public_path__ =
+    document.querySelector('body')!.getAttribute('data-base-url') +
+    'nbextensions/algorithmx-jupyter';
 
-if ((window as any).require !== undefined) {
-  ;(window as any).require.config({
-    map: {
-      '*': {
-        'algorithmx-jupyter': 'nbextensions/algorithmx-jupyter/index'
-      }
-    }
-  })
+if (window.require !== undefined) {
+    (window.require as any).config({
+        map: {
+            '*': {
+                'algorithmx-jupyter': 'nbextensions/algorithmx-jupyter/index',
+            },
+        },
+    });
 }
 
-export const load_ipython_extension = () => {}
+export const load_ipython_extension = () => {};

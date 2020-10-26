@@ -1,67 +1,49 @@
 from glob import glob
-from os.path import join as pjoin, exists as pexists
-
-from setupbase import (
+from os.path import join as pjoin, abspath, dirname
+from setuptools import setup, find_packages
+from jupyter_packaging import (
     create_cmdclass,
     install_npm,
     ensure_targets,
-    find_packages,
     combine_commands,
     ensure_python,
     get_version,
-    command_for_func,
-    run,
-    skip_npm,
-    HERE,
 )
-from setuptools import setup
 
-ensure_python(">=3.6")
+ensure_python(">=3.7")
+HERE = abspath(dirname(__file__))
 
 name = "algorithmx"
 version = get_version(pjoin(name, "_version.py"))
 
-with open("README.md", "r") as f:
-    long_description = f.read()
-
-with open("requirements/common.txt", "r") as f:
-    requirements = f.readlines()
-
-js_path = pjoin(HERE, "js")
-nb_path = pjoin(HERE, name, "nbextension", "static")
-lab_path = pjoin(HERE, name, "labextension")
-
-js_exists = True
-if not pexists(js_path):
-    js_exists = False
-
-jstargets = [pjoin(nb_path, "index.js"), pjoin(nb_path, "extension.js")]
-
-package_data_spec = {
-    name: ["nbextension/static/*.js*", "labextension/*.tgz", "server/*.html"]
-}
+package_data_spec = {name: ["js_dist/*.js*", "labextension/*.tgz", "server/*.html"]}
 
 data_files_spec = [
-    ("share/jupyter/nbextensions/algorithmx-jupyter", nb_path, "*.js*"),
-    ("share/jupyter/lab/extensions", lab_path, "*.tgz"),
-    ("etc/jupyter/nbconfig/notebook.d", HERE, "algorithmx-jupyter -config.json"),
+    (
+        "share/jupyter/nbextensions/algorithmx-jupyter",
+        pjoin(HERE, name, "js_dist"),
+        "*.js*",
+    ),
+    ("share/jupyter/lab/extensions", pjoin(HERE, name, "labextension"), "*.tgz"),
+    ("etc/jupyter/nbconfig/notebook.d", HERE, "algorithmx-jupyter.json"),
 ]
 
 cmdclass = create_cmdclass(
-    None,  # 'js' if js_exists else None,
-    package_data_spec=package_data_spec,
-    data_files_spec=data_files_spec,
+    None, package_data_spec=package_data_spec, data_files_spec=data_files_spec
 )
-cmdclass["js"] = combine_commands(
-    install_npm(path=js_path, build_dir=nb_path, source_dir=js_path, build_cmd="build"),
-    ensure_targets(jstargets),
+
+cmdclass["jsdeps"] = combine_commands(
+    install_npm(HERE, build_cmd="build:all", npm=["jlpm"]),
+    ensure_targets(pjoin(HERE, name, "js_dist", "index.js")),
 )
+
+with open(pjoin(HERE, "README.md"), "r") as f:
+    long_description = f.read()
 
 setup_args = dict(
     name=name,
     description="A library for network visualization and algorithm simulation.",
     version=version,
-    scripts=glob(pjoin("scripts", "*")),
     cmdclass=cmdclass,
     packages=find_packages(),
     author="Alex Socha",
@@ -71,20 +53,25 @@ setup_args = dict(
     url="https://github.com/algrx/algorithmx-python",
     license="MIT",
     platforms=["Linux", "MacOS", "Windows"],
-    keywords=["Jupyter", "Widgets", "IPython"],
+    keywords=["Jupyter", "JupyterLab", "IPython"],
     classifiers=[
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Framework :: Jupyter",
     ],
     include_package_data=True,
-    install_requires=requirements,
-    extras_require={},
+    install_requires=[],
+    extras_require={
+        "jupyter": [
+            "ipywidgets>=7.0.0",
+            "jupyterlab>=2.0.0",
+        ],
+        "networkx": ["networkx>=2.4"],
+    },
     entry_points={},
 )
 

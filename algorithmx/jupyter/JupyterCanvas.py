@@ -5,14 +5,14 @@ from traitlets import Unicode, List as SyncList, Bool as SyncBool  # type: ignor
 import json
 
 from ..api import Canvas, DispatchEvent
-from ._frontend import module_name, module_version
+from .extension import module_name, module_version
 
 
-class JupyterCanvas(DOMWidget, Canvas):
-    _model_name = Unicode("AlgorithmxModel").tag(sync=True)
+class JupyterCanvas(Canvas, DOMWidget):
+    _model_name = Unicode("AlgorithmXModel").tag(sync=True)
     _model_module = Unicode(module_name).tag(sync=True)
     _model_module_version = Unicode(module_version).tag(sync=True)
-    _view_name = Unicode("AlgorithmxView").tag(sync=True)
+    _view_name = Unicode("AlgorithmXView").tag(sync=True)
     _view_module = Unicode(module_name).tag(sync=True)
     _view_module_version = Unicode(module_version).tag(sync=True)
 
@@ -20,8 +20,8 @@ class JupyterCanvas(DOMWidget, Canvas):
     show_buttons: SyncBool = SyncBool(False).tag(sync=True)
 
     def __init__(self, **kwargs):
-        super(Canvas, self).__init__()
-        super(DomWidget, self).__init__(**kwargs)
+        Canvas.__init__(self)
+        DOMWidget.__init__(self, **kwargs)
 
         self._subscriptions = []
         if "buttons" in kwargs:

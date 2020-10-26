@@ -1,4 +1,5 @@
 # AlgorithmX Python
+
 [![travis](https://travis-ci.com/algrx/algorithmx-python.svg)](https://travis-ci.com/algrx/algorithmx-python)
 [![PyPI version](https://badge.fury.io/py/algorithmx.svg)](https://pypi.org/project/algorithmx)
 
@@ -10,12 +11,14 @@
 <img src="https://raw.githubusercontent.com/algrx/algorithmx/master/img/example.svg?sanitize=true" align="center" width="600px">
 
 ## Resources
-  - <a href="https://algrx.github.io/">Website</a>
-  - <a href="https://algrx.github.io/algorithmx/docs/python/">Documentation</a>
+
+- <a href="https://algrx.github.io/">Website</a>
+- <a href="https://algrx.github.io/algorithmx/docs/python/">Documentation</a>
 
 ## Installation
 
-Python 3.7.0 or higher is required. Using pip:  
+Python 3.7.0 or higher is required. Using pip:
+
 ```
 pip install algorithmx
 ```
@@ -73,6 +76,7 @@ display(canvas)
 ### Manual install
 
 Make sure you have Python 3.6.1 of higher, then run:
+
 ```
 # build js
 cd js
@@ -97,10 +101,11 @@ Finally, open `localhost:5050` in a browser.
 Docker: `docker-compose up notebook`
 
 Manually:
+
 ```
 jupyter nbextension install --symlink --sys-prefix --py algorithmx
 jupyter nbextension enable --sys-prefix --py algorithmx
-jupyter notebook 
+jupyter notebook
 ```
 
 Finally, try opening `examples/basic.ipynb`.
@@ -111,6 +116,7 @@ Clean any previous builds with `rm -rf build dist`.
 
 Docker: `docker-compose up --build build`
 Manually:
+
 ```
 python -m mypy .
 python -m pytest tests -vv
@@ -122,6 +128,7 @@ The bundle can be found in `dist/`.
 ### Distribute
 
 Set up pre-commit hooks:
+
 ```
 pre-commit install
 ```

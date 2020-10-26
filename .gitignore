@@ -2,8 +2,9 @@ docs/build/
 docs/jupyter_execute/
 docs/source/_static/index.js
 docs/source/_static/index.js.map
-algorithmx/nbextension/static/
+algorithmx/js_dist/
 algorithmx/labextension/
+js/dist-lab/
 
 build/
 dist/
@@ -11,6 +12,7 @@ cache/
 __pycache__/
 .pytest_cache/
 node_modules/
+yarn.lock
 
 coverage.xml
 MANIFEST

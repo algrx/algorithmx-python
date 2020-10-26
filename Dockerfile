@@ -3,84 +3,73 @@ FROM node:10 as build-js
 WORKDIR /app
 
 COPY ./js/src ./src
-COPY ./js/tsconfig.json .
-COPY ./js/webpack.config.js .
-COPY ./js/package*.json ./
+COPY ./js/tsconfig.json ./js/webpack.config.js ./js/package*.json ./
 
 RUN npm ci
-RUN npm run build
+RUN npm run build:js && npm run build:labextension
+
 
 # === setup python ===
 FROM python:3.7.0 as setup
 WORKDIR /app
 
-COPY ./requirements ./requirements/
-COPY ./algorithmx ./algorithmx/
-COPY ./setup.py .
-COPY ./setupbase.py .
-COPY ./README.md .
-COPY ./LICENSE.txt .
-COPY ./MANIFEST.in .
+COPY ./algorithmx ./algorithmx
+COPY ./docs ./docs
+COPY ./dev-requirements.txt ./setup.py ./pyproject.toml ./algorithmx-jupyter.json \
+./README.md ./LICENSE.txt ./MANIFEST.in ./
 
-# install python dependencies
-RUN python -m pip install --upgrade pip \
-&& python -m pip install -r /app/requirements/common.txt -r /app/requirements/dev.txt
+# upgrade pip
+RUN python -m pip install --upgrade pip
 
 # copy built js
-COPY --from=build-js /app/dist/nbextension ./algorithmx/nbextension/static
-COPY --from=build-js /app/dist/labextension ./algorithmx/labextension
+COPY --from=build-js /app/dist ./algorithmx/js_dist
+COPY --from=build-js /app/dist ./docs/js_dist
+COPY --from=build-js /app/dist-lab ./algorithmx/labextension
+
+
+# === prepare build ===
+FROM setup as prepare-build
+
+# install dev dependencies and the module itself
+RUN python -m pip install -r /app/dev-requirements.txt \
+&& python -m pip install -e ".[networkx]"
 
 
 # === http server ===
 FROM setup as http-server
 
-# install optional dependencies and the module itself
-RUN python -m pip install -r /app/requirements/optional.txt \
-&& python -m pip install --no-deps .
+# install the module itself
+RUN python -m pip install --no-deps -e .
 
 EXPOSE 5050
 EXPOSE 5051
 
 
-# === docs ===
-FROM setup as setup-docs
-WORKDIR /app
-
-# install dependencies and the module itself
-RUN python -m pip install -r /app/requirements/docs.txt \
-&& python -m pip install --no-deps .
-
-WORKDIR /app/docs
-COPY docs ./
-
-# copy built js
-COPY --from=build-js /app/dist/docs ./src/_static
-
-
 # === jupyter notebook ===
-FROM setup as setup-jupyter
+FROM setup as jupyter-notebook
 
-# install and enable jupyter plugin
-RUN python -m jupyter nbextension install --symlink --sys-prefix --py algorithmx \
-&& python -m jupyter nbextension enable --sys-prefix --py algorithmx
+# install jupyter nodebook and the module itself
+RUN python -m pip install -e ".[jupyter]" \
+&& python -m jupyter nbextension list
 
 EXPOSE 8888
 
 
-# === install jupyter lab plugin ===
-FROM setup-jupyter as install-jupyter-lab
+# === jupyter lab ===
+FROM setup as jupyter-lab
 
 # install nodejs
-RUN apt-get update
-RUN apt-get install -y curl
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash
-RUN apt-get install -y nodejs
+RUN apt-get update \
+&& apt-get install -y curl \
+&& curl -sL https://deb.nodesource.com/setup_12.x | bash \
+&& apt-get install -y nodejs
 
-# install the jupyter widget manager package
-RUN conda run -n algorithmx jupyter labextension install @jupyter-widgets/jupyterlab-manager
+# install jupyter lab and the module itself
+RUN python -m pip install -e ".[jupyter]"
 
-# rebuild jupyter lab, installing the plugin from the python package
-RUN conda run -n algorithmx jupyter lab build
+# enable the jupyter lab extension
+RUN python -m jupyter labextension install @jupyter-widgets/jupyterlab-manager --no-build \
+&& python -m jupyter lab build --dev-build=true --minimize=false \
+&& python -m jupyter labextension list
 
-# list installed extensions
-RUN conda run -n algorithmx jupyter labextension list
+EXPOSE 8888
