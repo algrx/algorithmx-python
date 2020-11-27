@@ -64,10 +64,13 @@ export class AlgorithmXView extends DOMWidgetView {
         if (this.canvas === null) return;
 
         this.canvas.queues().clear().start();
-        this.canvas.duration(0).remove().add({
-            size: [400, 250],
-            zoomtoggle: true,
-        });
+        this.canvas
+            .duration(0)
+            .remove()
+            .add({
+                size: [400, 250],
+                zoomtoggle: true,
+            });
         setTimeout(() => {
             this.canvas!.duration(0).svgattr('width', '100%');
         }, 1);

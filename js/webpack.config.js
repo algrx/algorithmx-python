@@ -45,7 +45,7 @@ module.exports = [
         output: {
             filename: 'index.js',
             path: distDir,
-            library: "algorithmx-jupyter",
+            library: 'algorithmx-jupyter',
             libraryTarget: 'amd',
             publicPath: publicPath,
         },
@@ -57,7 +57,7 @@ module.exports = [
         output: {
             filename: 'extension.js',
             path: path.join(buildDir, 'nbextension'),
-            library: "algorithmx-jupyter",
+            library: 'algorithmx-jupyter',
             libraryTarget: 'amd',
         },
         ...options,
