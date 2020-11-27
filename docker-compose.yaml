@@ -1,0 +1,78 @@
+version: '3.7'
+services:
+    build-js:
+        build:
+            context: .
+            target: setup-js
+        volumes:
+            - './js/dist:/app/dist'
+            - './js/build:/app/build'
+        image: algorithmx-build-js
+        command: bash -c "
+            npm run typecheck
+            && npm run build:js"
+
+    build:
+        build:
+            context: .
+            target: prepare-build
+        volumes:
+            - './dist:/app/dist'
+            - './build:/app/build'
+        image: algorithmx-build
+        command: bash -c "
+            python -m mypy .
+            && python -m pytest tests -vv
+            && rm -rf build/* dist/*
+            && python setup.py build sdist bdist_wheel"
+
+    docs:
+        build:
+            context: .
+            target: prepare-build
+        image: algorithmx-docs
+        volumes:
+            - './docs/build:/app/docs/build'
+            - './docs/cache:/app/docs/cache'
+        command: ./docs/build.sh
+
+    http-server:
+        build:
+            context: .
+            target: http-server
+        image: algorithmx-http-server
+        ports:
+            - '5050:5050'
+            - '5051:5051'
+        volumes:
+            - './algorithmx:/app/algorithmx'
+            - './examples:/app/examples'
+        command: python examples/basic_http_server.py
+
+    jupyter-notebook:
+        build:
+            context: .
+            target: jupyter-notebook
+        image: algorithmx-jupyter-notebook
+        ports:
+            - '8888:8888'
+        volumes:
+            - './examples:/app/examples'
+        tty: true
+        command: bash -c "
+            python -m jupyter nbextension list
+            && python -m jupyter notebook --allow-root --ip=0.0.0.0 --port=8888"
+
+    jupyter-lab:
+        build:
+            context: .
+            target: jupyter-lab
+        image: algorithmx-jupyter-lab
+        ports:
+            - '8888:8888'
+        volumes:
+            - './examples:/app/examples'
+        tty: true
+        command: bash -c "
+            python -m jupyter labextension list
+            && python -m jupyter lab --allow-root --ip=0.0.0.0 --port=8888"

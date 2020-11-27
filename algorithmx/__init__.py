@@ -1,6 +1,8 @@
-from ._version import __version__, version_info
+from ._version import *
+from .api import *
+from .main import *
 
-from .nbextension import _jupyter_nbextension_paths
-
-from .main import http_server, jupyter_client, jupyter_canvas
-
+try:
+    from .jupyter import *
+except:
+    pass

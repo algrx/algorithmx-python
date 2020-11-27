@@ -1,154 +1,164 @@
-import { DOMWidgetModel, DOMWidgetView, ISerializers } from '@jupyter-widgets/base'
-import { version, name } from './version'
-import * as buttonUtils from './buttons'
-import * as algorithmx from 'algorithmx'
+import { createCanvas, Canvas, DispatchEvent } from 'algorithmx';
 
-export class AlgorithmxModel extends DOMWidgetModel {
-  defaults() {
-    return {...super.defaults(),
-      _model_name: 'AlgorithmxModel',
-      _model_module: name,
-      _model_module_version: version,
-      _view_name: 'AlgorithmxView',
-      _view_module: name,
-      _view_module_version: version,
+import { DOMWidgetModel, DOMWidgetView, ISerializers } from '@jupyter-widgets/base';
+import { version, name } from '../package.json';
+import { createButton, setButtonIcon } from './buttons';
 
-      events: [],
-      show_buttons: false
+export class AlgorithmXModel extends DOMWidgetModel {
+    defaults() {
+        return {
+            ...super.defaults(),
+            _model_name: AlgorithmXModel.model_name,
+            _model_module: AlgorithmXModel.model_module,
+            _model_module_version: AlgorithmXModel.model_module_version,
+            _view_name: AlgorithmXModel.view_name,
+            _view_module: AlgorithmXModel.view_module,
+            _view_module_version: AlgorithmXModel.view_module_version,
+            events: [],
+            show_buttons: false,
+        };
     }
-  }
 
-  static serializers: ISerializers = {
-    ...DOMWidgetModel.serializers,
-  }
+    static serializers: ISerializers = {
+        ...DOMWidgetModel.serializers,
+    };
+    static model_name = 'AlgorithmXModel';
+    static model_module = name;
+    static model_module_version = version;
+    static view_name = 'AlgorithmXView';
+    static view_module = name;
+    static view_module_version = version;
 }
 
-export class AlgorithmxView extends DOMWidgetView {
-  private client: algorithmx.Client | null = null
-  private canvas: algorithmx.CanvasSelection | null = null
-  private eventIndex = 0
+export class AlgorithmXView extends DOMWidgetView {
+    private canvas: Canvas | null = null;
+    private eventIndex = 0;
 
-  private stopped = false
+    private stopped = false;
 
-  playEvents(events: ReadonlyArray<string>) {
-    if (this.client === null) return
-    events.forEach(eventStr => {
-      const event = JSON.parse(eventStr) as algorithmx.DispatchEvent
-      this.client!.dispatch(event)
-    })
-  }
+    playEvents(events: ReadonlyArray<string>) {
+        if (this.canvas === null) return;
 
-  playAllEvents() {
-    const events = this.model.get('events')
-    this.playEvents(events)
-  }
+        events.forEach((eventStr) => {
+            const event = JSON.parse(eventStr) as DispatchEvent;
+            this.canvas!.dispatch(event);
+        });
+    }
 
-  eventsChanged() {
-    if (this.client === null) return
+    playAllEvents() {
+        const events = this.model.get('events');
+        this.playEvents(events);
+    }
 
-    const events: ReadonlyArray<string> = this.model.get('events')
-    const newEvents = events.slice(this.eventIndex)
-    this.eventIndex = events.length
+    eventsChanged() {
+        if (this.canvas === null) return;
 
-    this.playEvents(newEvents)
-  }
+        const events: ReadonlyArray<string> = this.model.get('events');
+        const newEvents = events.slice(this.eventIndex);
+        this.eventIndex = events.length;
 
-  resetCanvas() {
-    if (this.canvas === null) return
-    const immediateCanvas = this.canvas.eventQ(null).duration(0)
-    immediateCanvas.cancelall().startall()
-    immediateCanvas.remove()
-    immediateCanvas.add().size([400, 250]).zoomkey(true)
-    setTimeout(() => { immediateCanvas.svgattr('width', '100%') }, 1)
-  }
+        this.playEvents(newEvents);
+    }
 
-  removeCanvas() {
-    this.resetCanvas()
+    resetCanvas() {
+        if (this.canvas === null) return;
 
-    const element: Element = this.el
-    const canvasDiv = element.querySelector('algorithmx-container')
-    if (canvasDiv !== null) element.removeChild(canvasDiv)
+        this.canvas.queues().clear().start();
+        this.canvas.duration(0).remove().add({
+            size: [400, 250],
+            zoomtoggle: true,
+        });
+        setTimeout(() => {
+            this.canvas!.duration(0).svgattr('width', '100%');
+        }, 1);
+    }
 
-    const buttonDiv = element.querySelector('algorithmx-buttons')
-    if (buttonDiv !== null) element.removeChild(buttonDiv)
-  }
+    removeCanvas() {
+        this.resetCanvas();
 
-  remove() {
-    this.removeCanvas()
-    super.remove()
-  }
+        const element: Element = this.el;
+        const canvasDiv = element.querySelector('algorithmx-container');
+        if (canvasDiv !== null) element.removeChild(canvasDiv);
 
-  clickRestart() {
-    if (this.canvas === null) return
+        const buttonDiv = element.querySelector('algorithmx-buttons');
+        if (buttonDiv !== null) element.removeChild(buttonDiv);
+    }
 
-    this.resetCanvas()
-    this.playAllEvents()
-    this.stopped = false
-  }
+    remove() {
+        this.removeCanvas();
+        super.remove();
+    }
 
-  clickStart () {
-    if (this.canvas === null) return
-    this.canvas.eventQ(null).startall()
-    this.stopped = false
-  }
+    clickRestart() {
+        if (this.canvas === null) return;
 
-  clickStop () {
-    if (this.canvas === null) return
-    this.canvas.eventQ(null).stopall()
-    this.stopped = true
-  }
+        this.resetCanvas();
+        this.playAllEvents();
+        this.stopped = false;
+    }
 
-  renderButtons() {
-    const element: Element = this.el
+    clickStart() {
+        if (this.canvas === null) return;
+        this.canvas.queues().start();
+        this.stopped = false;
+    }
 
-    const buttonDiv = document.createElement('div')
-    buttonDiv.style.height = '40px'
+    clickStop() {
+        if (this.canvas === null) return;
+        this.canvas.queues().stop();
+        this.stopped = true;
+    }
 
-    const buttonPlay = buttonUtils.createButton('pause', () => {
-      if (this.stopped) {
-        buttonUtils.setIcon(buttonPlay, 'pause')
-        this.clickStart()
-      } else {
-        buttonUtils.setIcon(buttonPlay, 'play')
-        this.clickStop()
-      }
-    })
+    renderButtons() {
+        const element: Element = this.el;
 
-    const buttonRestart = buttonUtils.createButton('repeat', () => {
-      buttonUtils.setIcon(buttonPlay, 'pause')
-      this.clickRestart()
-    })
+        const buttonDiv = document.createElement('div');
+        buttonDiv.style.height = '40px';
 
-    buttonDiv.appendChild(buttonPlay)
-    buttonDiv.appendChild(buttonRestart)
+        const buttonPlay = createButton('pause', () => {
+            if (this.stopped) {
+                setButtonIcon(buttonPlay, 'pause');
+                this.clickStart();
+            } else {
+                setButtonIcon(buttonPlay, 'play');
+                this.clickStop();
+            }
+        });
 
-    element.appendChild(buttonDiv)
-  }
+        const buttonRestart = createButton('repeat', () => {
+            setButtonIcon(buttonPlay, 'pause');
+            this.clickRestart();
+        });
 
-  render() {
-    this.removeCanvas()
+        buttonDiv.appendChild(buttonPlay);
+        buttonDiv.appendChild(buttonRestart);
 
-    const canvasDiv = document.createElement('div')
-    canvasDiv.setAttribute('id', 'algorithmx-container')
+        element.appendChild(buttonDiv);
+    }
 
-    this.client = algorithmx.client(canvasDiv)
+    render() {
+        this.removeCanvas();
 
-    this.client.subscribe(event => {
-      const fullEvent = { source: 'algorithmx', data: event }
-      const fullEventStr = JSON.stringify(fullEvent)
-      this.send(fullEventStr)
-    })
+        const canvasDiv = document.createElement('div');
+        canvasDiv.setAttribute('id', 'algorithmx-container');
 
-    this.canvas = this.client.canvas()
-    this.resetCanvas()
+        this.canvas = createCanvas(canvasDiv);
 
-    const element: Element = this.el
-    element.appendChild(canvasDiv)
+        this.canvas.onreceive((event) => {
+            const fullEvent = { type: 'algorithmx', data: event };
+            const fullEventStr = JSON.stringify(fullEvent);
+            this.send(fullEventStr);
+        });
 
-    const showButtons = this.model.get('show_buttons')
-    if (showButtons) this.renderButtons()
+        this.resetCanvas();
 
-    this.model.on('change:events', this.eventsChanged, this)
-    this.eventsChanged()
-  }
+        const element: Element = this.el;
+        element.appendChild(canvasDiv);
+
+        const showButtons = this.model.get('show_buttons');
+        if (showButtons) this.renderButtons();
+
+        this.model.on('change:events', this.eventsChanged, this);
+        this.eventsChanged();
+    }
 }

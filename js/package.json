@@ -1,58 +1,58 @@
 {
-  "name": "algorithmx-jupyter",
-  "version": "2.1.2",
-  "main": "dist/index.js",
-  "types": "./dist/types/index.d.ts",
-  "files": [
-    "dist/",
-    "dist-lab/"
-  ],
-  "unpkg": "dist/index.js",
-  "homepage": "https://github.com/algrx/algorithmx-python",
-  "license": "MIT",
-  "author": {
-    "name": "Alex Socha"
-  },
-  "description": "AlgorithmX Jupyter widget.",
-  "keywords": [
-    "jupyter",
-    "jupyterlab",
-    "jupyterlab-extension",
-    "widgets",
-    "algorithmx"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/algrx/algorithmx-python"
-  },
-  "scripts": {
-    "build": "npm run build:nbextension && npm run build:labextension",
-    "build:nbextension": "NODE_OPTIONS=--max_old_space_size=1000 webpack -p",
-    "build:labextension": "mkdir -p dist/labextension && cd dist/labextension && npm pack ../..",
-    "inject": "cp -r dist/nbextension ../algorithmx/nbextension/static && cp -r dist/labextension ../algorithmx/labextension",
-    "clean": "rimraf ../algorithmx/nbextension/static && rimraf ../algorithmx/labextension",
-    "watch": "webpack --watch"
-  },
-  "dependencies": {
-    "@jupyter-widgets/base": "3.0.0",
-    "algorithmx": "^1.1.0"
-  },
-  "devDependencies": {
-    "@phosphor/application": "1.7.3",
-    "@phosphor/widgets": "1.9.3",
-    "@types/node": "13.11.0",
-    "@types/webpack-env": "1.15.1",
-    "fs-extra": "9.0.0",
-    "mkdirp": "1.0.4",
-    "npm-run-all": "4.1.5",
-    "rimraf": "3.0.2",
-    "source-map-loader": "0.2.4",
-    "ts-loader": "6.2.2",
-    "typescript": "3.8.3",
-    "webpack": "4.42.1",
-    "webpack-cli": "3.3.11"
-  },
-  "jupyterlab": {
-    "extension": "dist/jupyter-lab/labplugin"
-  }
+    "name": "algorithmx-jupyter",
+    "version": "3.0.0",
+    "main": "dist/index.js",
+    "types": "dist/types",
+    "files": [
+        "dist"
+    ],
+    "unpkg": "dist/index.js",
+    "homepage": "https://github.com/algrx/algorithmx-python",
+    "license": "MIT",
+    "author": {
+        "name": "Alex Socha"
+    },
+    "description": "AlgorithmX Jupyter widget.",
+    "keywords": [
+        "jupyter",
+        "jupyterlab",
+        "jupyterlab-extension",
+        "widgets",
+        "algorithmx"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/algrx/algorithmx-python"
+    },
+    "scripts": {
+        "build:js": "NODE_OPTIONS=--max_old_space_size=2048 npx webpack && mkdir -p build/labextension && cd build/labextension && npm pack ../..",
+        "inject": "rimraf ../algorithmx/server/dist && rimraf ../algorithmx/nbextension && rimraf ../algorithmx/labextension && cp -r build/library ../algorithmx/server/dist && cp -r build/nbextension ../algorithmx/nbextension && cp -r build/labextension ../algorithmx/labextension",
+        "build": "rimraf dist && rimraf build && npm run build:js && npm run inject",
+        "watch": "npx webpack --watch",
+        "format": "npx prettier --write --ignore-path ../.gitignore .",
+        "typecheck": "npx tsc --noEmit"
+    },
+    "dependencies": {
+        "@jupyter-widgets/base": "^3.0.0",
+        "algorithmx": "^2.0.0"
+    },
+    "devDependencies": {
+        "@jupyterlab/application": "2.2.6",
+        "@phosphor/application": "1.7.3",
+        "@phosphor/widgets": "1.9.3",
+        "@types/node": "14.14.2",
+        "@types/webpack-env": "1.15.3",
+        "fs-extra": "9.0.1",
+        "prettier": "2.1.2",
+        "pretty-quick": "3.1.0",
+        "rimraf": "3.0.2",
+        "source-map-loader": "1.1.1",
+        "ts-loader": "8.0.7",
+        "typescript": "4.0.3",
+        "webpack": "5.2.0",
+        "webpack-cli": "4.1.0"
+    },
+    "jupyterlab": {
+        "extension": "dist/labextension"
+    }
 }

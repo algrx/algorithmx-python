@@ -1,5 +1,5 @@
-from ..graphics import EventHandler, ReceiveEvent, DispatchEvent
-from ..graphics import CanvasSelection
+from ..api import ReceiveEvent, DispatchEvent
+from ..api import Canvas
 
-from .JupyterClient import JupyterClient
-from .JupyterCanvas import JupyterCanvas
+from .JupyterCanvas import JupyterCanvas, create_jupyter_canvas
+from .extension import _jupyter_nbextension_paths
