@@ -10,7 +10,7 @@ def _jupyter_nbextension_paths():
     return [
         {
             "section": "notebook",
-            "src": "js_dist",
+            "src": "nbextension",
             "dest": "algorithmx-jupyter",
             "require": "algorithmx-jupyter/extension",
         }

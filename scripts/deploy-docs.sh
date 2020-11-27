@@ -1,19 +1,17 @@
-# git
-rm -rf public && mkdir public
-cd public
-git init
-#git remote add origin "https://${GITHUB_TOKEN}@github.com/algrx/algorithmx.git"
-git remote add origin "https://github.com/algrx/algorithmx.git"
-git pull origin gh-pages
+# clone and merge
+git clone "https://${DEPLOY_GITHUB_TOKEN}@github.com/algrx/algrx.github.io.git" website
+mkdir -p website/docs && rm -rf website/docs/python
+cp -r docs/build website/docs/python
+cd website
 
-# copy
-rm -rf docs/python && mkdir docs/python
-cp -rf ../docs/build/. docs/python
-
-# create a file at the root to prevent default jekyll behaviour (e.g. ignoring _static)
-touch .nojekyll
+git config --local user.name "GitHub Action"
+git config --local user.email "action@github.com"
 
 # deploy
 git add .
-git commit -m "docs: deploy python docs"
-git push -u origin master:gh-pages --force
+git commit -m "deploy: python docs"
+git push -u origin master --force
+
+# clean
+cd ..
+rm -rf website

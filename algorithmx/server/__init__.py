@@ -1,2 +1,2 @@
-from ..api import Canvas, DispatchEvent, ReceiveEvent
+from ..api import Canvas, create_canvas, DispatchEvent, ReceiveEvent
 from .CanvasServer import CanvasServer

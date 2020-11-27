@@ -1,0 +1,26 @@
+name: build
+on: [push]
+
+jobs:
+    app:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: Build package
+              run: docker-compose up --build build
+
+            - name: Build docs
+              run: docker-compose up --build docs
+
+            - name: Try building Jupyter lab
+              run: docker-compose build jupyter-lab
+
+            - name: Deploy docs
+              if: github.ref == 'refs/heads/master'
+              shell: bash
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  DEPLOY_GITHUB_TOKEN: ${{ secrets.DEPLOY_GITHUB_TOKEN }}
+              run: ./scripts/deploy-docs.sh

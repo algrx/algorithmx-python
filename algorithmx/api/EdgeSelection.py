@@ -1,10 +1,10 @@
-from typing import Union, Tuple, List, Optional, TypeVar, Any
+from typing import Union, Mapping, Tuple, List, Iterable, Optional, TypeVar, Any
 from dataclasses import dataclass, replace
 
 from .ElementSelection import ElementSelection
 from .LabelSelection import LabelSelection
 from .types import ElementArg, NumAttr, ElementId
-from .utils import ElementContext, apply_attrs, eval_element_arg
+from .utils import ElementContext, apply_attrs, eval_element_value, eval_element_dict
 
 EdgeId = Union[
     Tuple[Union[str, int], Union[str, int]],
@@ -14,7 +14,7 @@ EdgeId = Union[
 
 @dataclass
 class EdgeContext(ElementContext):
-    tuples: Optional[List[EdgeId]] = None
+    edges: Optional[List[EdgeId]] = None
 
 
 S = TypeVar("S", bound="EdgeSelection")
@@ -24,6 +24,33 @@ class EdgeSelection(ElementSelection):
     def __init__(self: S, context: EdgeContext):
         self._selection: EdgeContext = context
 
+    def add(
+        self: S,
+        attrs: ElementArg[Mapping[str, ElementArg[Any]]] = {},
+        **kwargs: ElementArg[Any],
+    ) -> S:
+        def attr_fn(data, data_index: int, element_index: int):
+            attr_obj = {
+                **(
+                    eval_element_dict(attrs, data, data_index)
+                    if attrs is not None
+                    else {}
+                ),
+                **eval_element_dict(kwargs, data, data_index),
+            }
+            return (
+                {
+                    "source": self._selection.edges[element_index][0],
+                    "target": self._selection.edges[element_index][1],
+                    **attr_obj,
+                }
+                if self._selection.edges is not None
+                else attr_obj
+            )
+
+        apply_attrs(self._selection, attr_fn)
+        return self.duration(0)
+
     def label(self, id: ElementId = 0) -> LabelSelection:
         """Selects a single edge label by its ID. Use "*" to select all existing labels.
 
@@ -31,24 +58,24 @@ class EdgeSelection(ElementSelection):
         :type id: :data:`api.types.ElementId`
 
         :return: A new selection corresponding to the given label, with the same data as
-        the current selection.
+            the current selection.
         """
         return self.labels([id])
 
-    def labels(self, ids: List[ElementId]) -> LabelSelection:
+    def labels(self, ids: Iterable[ElementId]) -> LabelSelection:
         """Selects multiple edge labels using a list of ID values. If no list is
         provided, all existing labels will be selected.
 
         :param ids: An list of label IDs.
-        :type ids: List[:data:`api.types.ElementId`]
+        :type ids: Iterable[:data:`api.types.ElementId`]
 
         :return: A new selection corresponding to the given labels, with the same data
-        as the current selection.
+            as the current selection.
         """
         return LabelSelection(
             replace(
                 self._selection,
-                ids=[str(id) for id in ids],
+                ids=[str(l) for l in ids],
                 data=None,  # use the edge (parent) data
                 parentkey="labels",
                 parent=self._selection,
@@ -100,23 +127,23 @@ class EdgeSelection(ElementSelection):
         :type value: Optional[:data:`~api.types.ElementArg`\\[str]
 
         :param source: The ID of the node from which the traversal animation should
-        originate.
+            originate.
         :type source: Optional[:data:`~api.types.ElementArg`\\[ElementId]
         """
 
         def attr_fn(data, data_index: int, i: int):
             animsource = (
-                eval_element_arg(source, data, data_index)
+                eval_element_value(source, data, data_index)
                 if source is not None
-                else self._selection.tuples[i][0]
-                if self._selection.tuples is not None
+                else self._selection.edges[i][0]
+                if self._selection.edges is not None
                 else None
             )
 
             return {
                 "color": {
                     "animtype": "traverse",
-                    "value": eval_element_arg(color, data, data_index),
+                    "value": eval_element_value(color, data, data_index),
                     **({"animsource": animsource} if animsource is not None else {}),
                 },
             }
@@ -141,7 +168,7 @@ class EdgeSelection(ElementSelection):
         `<https://github.com/d3/d3-shape#curves>`_.
 
         :param curve: The name of the curve function, based on the functions found in
-        D3. The full list is below:
+            D3. The full list is below:
 
             "basis", "bundle", "cardinal", "catmull-rom", "linear", "monotone-x",
             "monotone-y", "natural", "step", "step-before", "step-after"

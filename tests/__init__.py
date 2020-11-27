@@ -1,1 +1,1 @@
-from algorithmx import Canvas
+from algorithmx import *

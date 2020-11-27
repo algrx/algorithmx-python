@@ -3,7 +3,8 @@
 Basic Examples
 ==============
 
-Let’s import the library and create a simple network. You can hold down ``ctrl``/``cmd`` to zoom in.
+Let's import the library and create a simple network. Note that you can hold down
+``ctrl``/``cmd`` to zoom in.
 
 .. jupyter-execute::
 
@@ -17,7 +18,8 @@ Let’s import the library and create a simple network. You can hold down ``ctrl
     
     canvas
 
-That’s nice, but now we would like to animate it. Let’s also add some buttons so that we can easily start/stop/restart our animation.
+Now let's animate it. We'll also add some buttons so that we can easily
+start/stop/restart the animation.
 
 .. jupyter-execute::
 
@@ -30,11 +32,11 @@ That’s nice, but now we would like to animate it. Let’s also add some button
     canvas.pause(0.5)
     
     canvas.node(1).highlight().size('1.25x').pause(0.5)
-    canvas.edge((1, 2)).traverse().color('blue')
+    canvas.edge((1, 2)).traverse('blue')
     
     canvas
 
-Finally, lets apply all of this to a larger graph.
+Finally, let's apply all of this to a larger graph.
 
 .. jupyter-execute::
 
@@ -48,8 +50,8 @@ Finally, lets apply all of this to a larger graph.
         canvas.pause(0.5)
         canvas.node(i).color('green').highlight().size('1.25x')
         
-        if i < 8:
+        if i < 7:
             canvas.pause(0.5)
-            canvas.edge((i, i+1)).traverse().color('green')
+            canvas.edge((i, i+1)).traverse('green')
             
     canvas

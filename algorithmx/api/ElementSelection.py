@@ -1,8 +1,8 @@
-from typing import List, Mapping, Union, Iterable, Callable, TypeVar, Optional, Any
+from typing import Iterable, Mapping, Union, Iterable, Callable, TypeVar, Optional, Any
 from dataclasses import dataclass, replace
 from inspect import signature
 
-from .utils import ElementContext, apply_attrs, eval_element_arg, eval_element_obj_arg
+from .utils import ElementContext, apply_attrs, eval_element_value, eval_element_dict
 from .types import ElementArg, ElementFn
 
 
@@ -15,12 +15,12 @@ class ElementSelection:
 
     def attrs(
         self: S,
-        attrs: ElementArg[Mapping] = {},
+        attrs: ElementArg[Mapping[str, ElementArg[Any]]] = {},
         **kwargs: ElementArg[Any],
     ) -> S:
         """
         Applies a dictionary of attributes to all selected elements.
-        
+
         All attributes correspond to the available methods. Most attribute endpoints can be provided
         either as a single value, or as partial dictionary in the form:
         * value: The attribute value.
@@ -29,7 +29,7 @@ class ElementSelection:
         * highlight: Whether the change is temporary, see :meth:`~highlight`.
         * linger: How long a highlight should last, see :meth:`~highlight`.
         * Some attributes may also contain additional properties.
-        
+
         The whole dictionary, or any of its direct entries, can be provided as an [[ElementFn]].
         
         .. code-block:: python
@@ -49,8 +49,8 @@ class ElementSelection:
                    "duration": 2.5,
                },
             )
-        The whole dictionary, or any of its direct entries, can be provided as an
 
+        The whole dictionary, or any of its direct entries, can be provided as an
         :data:`~api.types.ElementFn`. Entries can also be provided using keyword
         arguments.
 
@@ -60,8 +60,8 @@ class ElementSelection:
         apply_attrs(
             self._selection,
             lambda d, i, _: {
-                **eval_element_obj_arg(attrs, d, i),
-                **eval_element_obj_arg(kwargs, d, i),
+                **eval_element_dict(attrs, d, i),
+                **eval_element_dict(kwargs, d, i),
             },
         )
         return self
@@ -69,49 +69,28 @@ class ElementSelection:
     def add(
         self: S,
         attrs: ElementArg[Mapping[str, ElementArg[Any]]] = {},
-        animtype: Optional[ElementArg[str]] = None,
         **kwargs: ElementArg[Any],
     ) -> S:
         """Adds all selected elements to the canvas with the given initial attributes.
 
         :param attrs: An attribute dictionary, see :data:`~api.types.ElementAttrs`.
         :type attrs: ElementArg[Mapping]
-        :param animtype: "fade" (animate transparancy) or "scale" (animate size).
 
         :return: A new instance of the current selection with animations disabled, to
-        allow for further attribute initialisation.
+            allow for further attribute initialisation.
         """
         return self.attrs(
             lambda d, i: {
-                **(
-                    {"visible": {"animtype": eval_element_arg(animtype, d, i)}}
-                    if animtype is not None
-                    else {}
-                ),
-                **(eval_element_obj_arg(attrs, d, i) if attrs is not None else {}),
-                **eval_element_obj_arg(kwargs, d, i),
+                **(eval_element_dict(attrs, d, i) if attrs is not None else {}),
+                **eval_element_dict(kwargs, d, i),
             }
         ).duration(0)
 
-    def remove(self: S, animtype: Optional[ElementArg[str]] = None) -> S:
-        """Removes all selected elements, resetting their attributes and layout state.
+    def remove(self: S) -> S:
+        """Removes all selected elements, resetting their attributes and layout state."""
+        return self.attrs(remove=True)
 
-        :param animtype: "fade" (animate transparancy) or "scale" (animate size).
-        """
-        return self.attrs(
-            lambda d, i: {
-                **(
-                    {"visible": {"animtype": eval_element_arg(animtype, d, i)}}  # type: ignore
-                    if animtype is not None
-                    else {}
-                ),
-                "remove": True,
-            }
-        )
-
-    def visible(
-        self: S, visible: ElementArg[bool], animtype: Optional[ElementArg[str]] = None
-    ) -> S:
+    def visible(self: S, visible: ElementArg[bool]) -> S:
         """
         Sets whether or not the elements in the current selection should be visible. This can be animated in the same way
         as additions and removals. However, in contrast to removing, disabling visibility will not clear attributes or
@@ -120,18 +99,7 @@ class ElementSelection:
         :param visible: Whether or not the elements should be visible.
         :type visible: :data:`~api.types.ElementArg`\\[bool]
         """
-        return self.attrs(
-            lambda d, i: {
-                "visible": {
-                    "value": eval_element_arg(animtype, d, i),
-                    **(
-                        {"animtype": eval_element_arg(animtype, d, i)}
-                        if animtype is not None
-                        else {}
-                    ),
-                }
-            }
-        )
+        return self.attrs(visible=visible)
 
     def svgattr(self: S, key: str, value: ElementArg[Union[str, int, float]]):
         """Sets a custom SVG attribute on the element. The root SVG tag is ``<shape>``
@@ -150,12 +118,12 @@ class ElementSelection:
         return self.attrs(
             lambda d, i: {
                 "svgattrs": {
-                    key: eval_element_arg(value, d, i),
+                    key: eval_element_value(value, d, i),
                 },
             }
         )
 
-    def withQ(self: S, queue: Union[str, int, None]) -> S:
+    def withQ(self: S, queue: Union[str, int, None] = 0) -> S:
         """Sets the event queue to use for all events triggered by the selection. Each
         queue handles events independently, and all queues execute in parallel, which
         enables multiple animations to run simultaneously.
@@ -164,11 +132,11 @@ class ElementSelection:
         The default queue ID is 0.
 
         :param queue: The name of the queue. This can be any string or number, or
-        ``None`` for the immediate queue.
+            ``None`` for the immediate queue. Defaults to 0.
         :type queue: Union[str, int, None]
 
         :return: A new instance of the current selection using the specified event
-        queue.
+            queue.
         """
         return self.__class__(
             replace(self._selection, withQ="null" if queue is None else queue),
@@ -183,7 +151,7 @@ class ElementSelection:
         :type seconds: Union[int, float]
 
         :return: A new instance of the current selection using the given animation
-        duration.
+            duration.
         """
         return self.__class__(
             replace(
@@ -201,7 +169,7 @@ class ElementSelection:
         another. More information is available here: `<https://github.com/d3/d3-ease>`_.
 
         :param ease: The name of the ease function, based on the functions found in D3.
-        The full list is below:
+            The full list is below:
 
             "linear", "poly", "poly-in", "poly-out", "poly-in-out", "quad", "quad-in",
             "quad-out", "quad-in-out", "cubic", "cubic-in", "cubic-out", "cubic-in-out",
@@ -233,7 +201,7 @@ class ElementSelection:
         permanently changing its attributes.
 
         :param seconds: The amount of time attributes should remain 'highlighted', in
-        seconds, before changing back to their original values. Defaults to 0.5.
+            seconds, before changing back to their original values. Defaults to 0.5.
         :type seconds: Optional[:data:`~api.types.ElementArg`\\[Union[int, float]]]
 
         :return: A new instance of the current selection, where all attribute changes are temporary.
@@ -250,8 +218,9 @@ class ElementSelection:
         )
 
     def pause(self: S, seconds: Union[int, float]) -> S:
-        """Pauses the current event queue for the given number of seconds. This is a
-        convenience shortcut for :meth:`~api.QueueSelection.pause`.
+        """Adds a pause to the current event queue. The pause will only start once all
+        previous pauses have finished. This is a shortcut for
+        :meth:`~api.QueueSelection.pause`.
 
         :param seconds: The duration of the pause, in seconds.
         :type seconds: Union[int, float]
@@ -261,47 +230,43 @@ class ElementSelection:
             and self._selection.callbacks.dispatch is not None
         ):
             self._selection.callbacks.dispatch(
-                {(self._selection.withQ or 0): {"pause": seconds}}
+                {
+                    "queues": {(self._selection.withQ or 0): {"pause": seconds}},
+                    "withQ": self._selection.withQ or 0,
+                }
             )
 
         return self
 
-    def data(self: S, data: Union[List[Any], ElementFn[Any]]) -> S:
+    def data(self: S, data: Union[Iterable[Any], ElementFn[Any]]) -> S:
         """Binds the selection to a list of data values. This will determine the data
         argument to provide whenever an :data:`~api.types.ElementFn` is used.
 
         You can also provide a function to map the current data list to a new one.
 
         :param data: Either a list of data values (which must have the same length as
-        the number of elements in the selection), or a function which maps the current
-        data list.
-        :type data: Union[List[Any], :data:`~api.ElementFn`\\[Any]]
+            the number of elements in the selection), or a function which maps the
+            current data list.
+        :type data: Union[Iterable[Any], :data:`~api.ElementFn`\\[Any]]
 
         :raise Exception: If the length of the data does not equal the number of
-        elements in the selection.
+            elements in the selection.
 
         :return: A new instance of the current selection bound to the given data.
         """
-        if isinstance(data, list) and len(data) != len(self._selection.ids):
+        data_list = (
+            [
+                eval_element_value(data, d, i)
+                for (i, d) in enumerate(self._selection.data or [])
+            ]
+            if callable(data)
+            else list(data)
+        )
+
+        if isinstance(data_list, list) and len(data_list) != len(self._selection.ids):
             raise Exception(
-                (
-                    "data length ({}) must equal the number of elements"
-                    + " in the selection ({})"
-                ).format(len(data), len(self._selection.ids))
+                f"data length ({len(data_list)}) must equal the number of"
+                + f" elements in the selection ({len(self._selection.ids)})"
             )
 
-        return self.__class__(
-            replace(
-                self._selection,
-                data=(
-                    data
-                    if isinstance(data, list)
-                    else [
-                        eval_element_arg(data, d, i)
-                        for (i, d) in enumerate(self._selection.data)
-                    ]
-                    if self._selection.data is not None
-                    else None
-                ),
-            )
-        )
+        return self.__class__(replace(self._selection, data=data_list))

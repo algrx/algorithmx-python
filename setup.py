@@ -1,7 +1,7 @@
 from glob import glob
 from os.path import join as pjoin, abspath, dirname
-from setuptools import setup, find_packages
-from jupyter_packaging import (
+from setuptools import setup, find_packages  # type: ignore
+from jupyter_packaging import (  # type: ignore
     create_cmdclass,
     install_npm,
     ensure_targets,
@@ -16,12 +16,19 @@ HERE = abspath(dirname(__file__))
 name = "algorithmx"
 version = get_version(pjoin(name, "_version.py"))
 
-package_data_spec = {name: ["js_dist/*.js*", "labextension/*.tgz", "server/*.html"]}
+package_data_spec = {
+    name: [
+        "nbextension/*",
+        "labextension/*",
+        "server/*.html",
+        "server/dist/*",
+    ]
+}
 
 data_files_spec = [
     (
         "share/jupyter/nbextensions/algorithmx-jupyter",
-        pjoin(HERE, name, "js_dist"),
+        pjoin(HERE, name, "nbextension"),
         "*.js*",
     ),
     ("share/jupyter/lab/extensions", pjoin(HERE, name, "labextension"), "*.tgz"),
@@ -33,8 +40,8 @@ cmdclass = create_cmdclass(
 )
 
 cmdclass["jsdeps"] = combine_commands(
-    install_npm(HERE, build_cmd="build:all", npm=["jlpm"]),
-    ensure_targets(pjoin(HERE, name, "js_dist", "index.js")),
+    install_npm(HERE, build_cmd="build", npm=["jlpm"]),
+    ensure_targets(pjoin(HERE, name, "nbextension", "index.js")),
 )
 
 with open(pjoin(HERE, "README.md"), "r") as f:
@@ -70,7 +77,7 @@ setup_args = dict(
             "ipywidgets>=7.0.0",
             "jupyterlab>=2.0.0",
         ],
-        "networkx": ["networkx>=2.4"],
+        "networkx": ["networkx>=2.5"],
     },
     entry_points={},
 )

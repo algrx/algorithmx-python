@@ -75,7 +75,7 @@ class WebsocketHandler(StreamRequestHandler):
 
             masks = self.rfile.read(4)
             message = read_text(self.rfile.read(payload_length), masks)
-            self.server.receive_message(message, self.client_id)
+            self.server.receive(message, self.client_id)
 
     def finish(self):
         self.server.remove_client(self.client_id)
@@ -89,10 +89,12 @@ class WebsocketServer(TCPServer, ThreadingMixIn):
     allow_reuse_address = True
     daemon_threads = True
 
-    clients: Dict[int, WebsocketHandler] = {}
-    client_id_counter = 0
+    def __init__(self, host: str, port: int):
+        super().__init__((host, port), WebsocketHandler)
 
-    receive_callback: Optional[Callable[[str], Any]] = None
+        self.clients: Dict[int, WebsocketHandler] = {}
+        self.client_id_counter = 0
+        self.receive_callback: Optional[Callable[[str], Any]] = None
 
     def unique_client_id(self) -> int:
         unique_id = self.client_id_counter
@@ -109,8 +111,8 @@ class WebsocketServer(TCPServer, ThreadingMixIn):
     def start(self):
         self.serve_forever()
 
-    def onreceive(self, listener: Callable[[str], Any]):
-        self.listener = listener
+    def onreceive(self, callback: Callable[[str], Any]):
+        self.receive_callback = callback
 
     def receive(self, message: str, client_id: int):
         if self.receive_callback is not None:
@@ -119,7 +121,3 @@ class WebsocketServer(TCPServer, ThreadingMixIn):
     def dispatch(self, message: str):
         for client in self.clients.values():
             client.send_message(message)
-
-
-def create_websocket_server(host: str, port: int) -> WebsocketServer:
-    return WebsocketServer((host, port), WebsocketHandler)

@@ -1,7 +1,8 @@
+import { createCanvas, Canvas, DispatchEvent } from 'algorithmx';
+
 import { DOMWidgetModel, DOMWidgetView, ISerializers } from '@jupyter-widgets/base';
 import { version, name } from '../package.json';
-import * as buttonUtils from './buttons';
-import * as algorithmx from 'algorithmx';
+import { createButton, setButtonIcon } from './buttons';
 
 export class AlgorithmXModel extends DOMWidgetModel {
     defaults() {
@@ -30,17 +31,17 @@ export class AlgorithmXModel extends DOMWidgetModel {
 }
 
 export class AlgorithmXView extends DOMWidgetView {
-    private client: algorithmx.Client | null = null;
-    private canvas: algorithmx.CanvasSelection | null = null;
+    private canvas: Canvas | null = null;
     private eventIndex = 0;
 
     private stopped = false;
 
     playEvents(events: ReadonlyArray<string>) {
-        if (this.client === null) return;
+        if (this.canvas === null) return;
+
         events.forEach((eventStr) => {
-            const event = JSON.parse(eventStr) as algorithmx.DispatchEvent;
-            this.client!.dispatch(event);
+            const event = JSON.parse(eventStr) as DispatchEvent;
+            this.canvas!.dispatch(event);
         });
     }
 
@@ -50,7 +51,7 @@ export class AlgorithmXView extends DOMWidgetView {
     }
 
     eventsChanged() {
-        if (this.client === null) return;
+        if (this.canvas === null) return;
 
         const events: ReadonlyArray<string> = this.model.get('events');
         const newEvents = events.slice(this.eventIndex);
@@ -61,12 +62,14 @@ export class AlgorithmXView extends DOMWidgetView {
 
     resetCanvas() {
         if (this.canvas === null) return;
-        const immediateCanvas = this.canvas.eventQ(null).duration(0);
-        immediateCanvas.cancelall().startall();
-        immediateCanvas.remove();
-        immediateCanvas.add().size([400, 250]).zoomkey(true);
+
+        this.canvas.queues().clear().start();
+        this.canvas.duration(0).remove().add({
+            size: [400, 250],
+            zoomtoggle: true,
+        });
         setTimeout(() => {
-            immediateCanvas.svgattr('width', '100%');
+            this.canvas!.duration(0).svgattr('width', '100%');
         }, 1);
     }
 
@@ -96,13 +99,13 @@ export class AlgorithmXView extends DOMWidgetView {
 
     clickStart() {
         if (this.canvas === null) return;
-        this.canvas.eventQ(null).startall();
+        this.canvas.queues().start();
         this.stopped = false;
     }
 
     clickStop() {
         if (this.canvas === null) return;
-        this.canvas.eventQ(null).stopall();
+        this.canvas.queues().stop();
         this.stopped = true;
     }
 
@@ -112,18 +115,18 @@ export class AlgorithmXView extends DOMWidgetView {
         const buttonDiv = document.createElement('div');
         buttonDiv.style.height = '40px';
 
-        const buttonPlay = buttonUtils.createButton('pause', () => {
+        const buttonPlay = createButton('pause', () => {
             if (this.stopped) {
-                buttonUtils.setIcon(buttonPlay, 'pause');
+                setButtonIcon(buttonPlay, 'pause');
                 this.clickStart();
             } else {
-                buttonUtils.setIcon(buttonPlay, 'play');
+                setButtonIcon(buttonPlay, 'play');
                 this.clickStop();
             }
         });
 
-        const buttonRestart = buttonUtils.createButton('repeat', () => {
-            buttonUtils.setIcon(buttonPlay, 'pause');
+        const buttonRestart = createButton('repeat', () => {
+            setButtonIcon(buttonPlay, 'pause');
             this.clickRestart();
         });
 
@@ -139,15 +142,14 @@ export class AlgorithmXView extends DOMWidgetView {
         const canvasDiv = document.createElement('div');
         canvasDiv.setAttribute('id', 'algorithmx-container');
 
-        this.client = algorithmx.client(canvasDiv);
+        this.canvas = createCanvas(canvasDiv);
 
-        this.client.subscribe((event) => {
-            const fullEvent = { source: 'algorithmx', data: event };
+        this.canvas.onreceive((event) => {
+            const fullEvent = { type: 'algorithmx', data: event };
             const fullEventStr = JSON.stringify(fullEvent);
             this.send(fullEventStr);
         });
 
-        this.canvas = this.client.canvas();
         this.resetCanvas();
 
         const element: Element = this.el;

@@ -1,12 +1,9 @@
 .. _utilities:
 
-Utilities
-=========
-
 NetworkX
---------
+========
 
-NetworkX graphs can be directly added to a canvas in the following way:
+NetworkX graphs can be added to a canvas in the following way:
 
 .. code-block:: python
 

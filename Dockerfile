@@ -1,12 +1,15 @@
 # === build js ===
-FROM node:10 as build-js
+FROM node:14 as setup-js
 WORKDIR /app
 
 COPY ./js/src ./src
 COPY ./js/tsconfig.json ./js/webpack.config.js ./js/package*.json ./
 
 RUN npm ci
-RUN npm run build:js && npm run build:labextension
+
+FROM setup-js as build-js
+WORKDIR /app
+RUN npm run build:js
 
 
 # === setup python ===
@@ -15,16 +18,18 @@ WORKDIR /app
 
 COPY ./algorithmx ./algorithmx
 COPY ./docs ./docs
-COPY ./dev-requirements.txt ./setup.py ./pyproject.toml ./algorithmx-jupyter.json \
-./README.md ./LICENSE.txt ./MANIFEST.in ./
+COPY ./tests ./tests
+COPY dev-requirements.txt setup.py pyproject.toml algorithmx-jupyter.json \
+README.md LICENSE.txt changelog.md MANIFEST.in ./
 
 # upgrade pip
 RUN python -m pip install --upgrade pip
 
 # copy built js
-COPY --from=build-js /app/dist ./algorithmx/js_dist
-COPY --from=build-js /app/dist ./docs/js_dist
-COPY --from=build-js /app/dist-lab ./algorithmx/labextension
+COPY --from=build-js /app/dist ./js/dist
+COPY --from=build-js /app/build/library ./algorithmx/server/dist
+COPY --from=build-js /app/build/nbextension ./algorithmx/nbextension
+COPY --from=build-js /app/build/labextension ./algorithmx/labextension
 
 
 # === prepare build ===
@@ -39,7 +44,7 @@ RUN python -m pip install -r /app/dev-requirements.txt \
 FROM setup as http-server
 
 # install the module itself
-RUN python -m pip install --no-deps -e .
+RUN python -m pip install --no-deps -e ".[networkx]"
 
 EXPOSE 5050
 EXPOSE 5051
@@ -49,7 +54,7 @@ EXPOSE 5051
 FROM setup as jupyter-notebook
 
 # install jupyter nodebook and the module itself
-RUN python -m pip install -e ".[jupyter]" \
+RUN python -m pip install -e ".[jupyter,networkx]" \
 && python -m jupyter nbextension list
 
 EXPOSE 8888
@@ -61,15 +66,15 @@ FROM setup as jupyter-lab
 # install nodejs
 RUN apt-get update \
 && apt-get install -y curl \
-&& curl -sL https://deb.nodesource.com/setup_12.x | bash \
+&& curl -sL https://deb.nodesource.com/setup_14.x | bash \
 && apt-get install -y nodejs
 
 # install jupyter lab and the module itself
-RUN python -m pip install -e ".[jupyter]"
+RUN python -m pip install -e ".[jupyter,networkx]"
 
 # enable the jupyter lab extension
 RUN python -m jupyter labextension install @jupyter-widgets/jupyterlab-manager --no-build \
-&& python -m jupyter lab build --dev-build=true --minimize=false \
+&& python -m jupyter lab build --dev-build=True --minimize=False \
 && python -m jupyter labextension list
 
 EXPOSE 8888

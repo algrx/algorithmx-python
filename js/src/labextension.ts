@@ -10,19 +10,6 @@ const extension: JupyterFrontEndPlugin<void> = {
             name: name,
             version: version,
             exports: () => require('./index'),
-            /*
-            exports: new Promise((resolve, reject) =>
-                require.ensure(
-                    ['./index'],
-                    (require) => resolve(require('./index')),
-                    (err) => {
-                        console.error(err);
-                        reject(err);
-                    },
-                    name,
-                ),
-            )
-            */
         });
     },
     autoStart: true,

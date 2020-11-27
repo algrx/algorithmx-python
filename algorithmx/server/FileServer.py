@@ -41,11 +41,8 @@ def absolute_file_handler(absolute_path: str, file: str) -> Type[FileRequestHand
 class FileServer(TCPServer):
     allow_reuse_address = True
 
+    def __init__(self, handler: Type[FileRequestHandler], host: str, port: int):
+        super().__init__((host, port), handler)
+
     def start(self):
         self.serve_forever()
-
-
-def create_file_server(
-    handler: Type[FileRequestHandler], host: str, port: int
-) -> FileServer:
-    return FileServer((host, port), handler)

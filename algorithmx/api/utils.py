@@ -16,8 +16,7 @@ class ElementCallbacks:
 class EventCallbacks:
     dispatch: Optional[Callable[[DispatchEvent], Any]] = None
     receive: Optional[Callable[[ReceiveEvent], Any]] = None
-    message: Optional[Callable[[str], Any]] = None
-    messages: Optional[Dict[str, Callable[[], Any]]] = None
+    messages: Optional[Dict[str, Union[Callable[[], Any], Callable[[str], Any]]]] = None
     nodes: Optional[Dict[str, ElementCallbacks]] = None
 
 
@@ -31,37 +30,38 @@ class ElementContext:
     parentkey: str = ""
     parent: Optional["ElementContext"] = None
     callbacks: EventCallbacks = field(default_factory=EventCallbacks)
+    client: Any = None  # used to maintain a reference to a custom client object
 
 
-def eval_element_arg(arg: ElementArg[Any], data: Any, index: int) -> Any:
-    if callable(arg):
-        num_args = len(signature(arg).parameters)
+def eval_element_value(value: ElementArg[Any], data: Any, index: int) -> Any:
+    if callable(value):
+        num_args = len(signature(value).parameters)
         return (
-            arg()  # type: ignore
+            value()  # type: ignore
             if num_args == 0
-            else arg(data)  # type: ignore
+            else value(data)  # type: ignore
             if num_args == 1
-            else arg(data, index)  # type: ignore
+            else value(data, index)  # type: ignore
         )
     else:
-        return arg
+        return value
 
 
-def eval_element_obj_arg(arg: ElementArg[Mapping], data: Any, index: int) -> Mapping:
-    # evaluate the entire object as a function
-    if callable(arg):
-        return eval_element_arg(arg, data, index)
+def eval_element_dict(raw_dict: ElementArg[Mapping], data: Any, index: int) -> Mapping:
+    # evaluate the entire dict as a function
+    if callable(raw_dict):
+        return eval_element_value(raw_dict, data, index)
     else:
-        if all([not callable(arg[k]) for k in arg]):
-            # simply return the object if it has no function keys
-            return arg
+        if all([not callable(raw_dict[k]) for k in raw_dict]):
+            # simply return the dict if it has no function keys
+            return raw_dict
 
         # evaluate each key which has a function
-        arg_dict = {}
-        for k in arg:
-            arg_dict[k] = eval_element_arg(arg[k], data, index)
+        new_dict = {}
+        for k in raw_dict:
+            new_dict[k] = eval_element_value(raw_dict[k], data, index)
 
-        return arg_dict
+        return new_dict
 
 
 def apply_attrs(
@@ -123,7 +123,10 @@ def add_element_callback(
         if k not in element_cbs_dict:
             element_cbs_dict[k] = ElementCallbacks()
 
-        cb = lambda: eval_element_arg(fn, context.data[i], i)
-        element_cbs_dict[k] = replace(element_cbs_dict[k], **{event_type: cb})
+        # callback closure
+        def callback(i=i):
+            eval_element_value(fn, context.data[i], i)
+
+        element_cbs_dict[k] = replace(element_cbs_dict[k], **{event_type: callback})
 
     setattr(context.callbacks, elementkey, element_cbs_dict)

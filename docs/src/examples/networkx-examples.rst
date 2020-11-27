@@ -3,18 +3,18 @@
 NetworkX Examples
 =================
 
-Let’s begin by creating a directed graph with random edge weights.
+Let's begin by creating a with random edge weights.
 
 .. jupyter-execute::
 
-    import algorithmx
-    import networkx as nx
+    from algorithmx import jupyter_canvas
     from random import randint
+    import networkx as nx
     
-    canvas = algorithmx.jupyter_canvas()
+    canvas = jupyter_canvas()
     
     # Create a directed graph
-    G = nx.circular_ladder_graph(5).to_directed()
+    G = nx.circular_ladder_graph(5)
     # Randomize edge weights
     nx.set_edge_attributes(G, {e: {'weight': randint(1, 9)} for e in G.edges})
     
@@ -22,8 +22,9 @@ Let’s begin by creating a directed graph with random edge weights.
     canvas.nodes(G.nodes).add()
     
     # Add directed edges with weight labels
-    canvas.edges(G.edges).add().directed(True) \
-        .label().text(lambda e: G.edges[e]['weight'])
+    canvas.edges(G.edges).add(
+        labels=lambda e: {0: {'text': G.edges[e]['weight']}}
+    )
     
     canvas
 
@@ -31,7 +32,7 @@ Next, we can use NetworkX run a breadth-first search, and AlgorithmX to animate 
 
 .. jupyter-execute::
 
-    canvas = algorithmx.jupyter_canvas(buttons=True)
+    canvas = jupyter_canvas(buttons=True)
     canvas.size((500, 400))
     
     # Generate a 'caveman' graph with 3 cliques of size 4
@@ -45,48 +46,50 @@ Next, we can use NetworkX run a breadth-first search, and AlgorithmX to animate 
     # Traverse the graph using breadth-first search
     bfs = nx.edge_bfs(G, 0)
     
-    # Animate traversal
+    # Animate the traversal
     source = None
     for e in bfs:
         if e[0] != source:
-            # Make the new source large
+            # Resize the source
             canvas.node(e[0]).size('1.25x').color('purple')
-            # Make the previous source small again
             if source is not None:
                 canvas.node(source).size('0.8x')
-            # Update source node
+
+            # Update the source
             source = e[0]
             canvas.pause(0.5)
             
-        # Traverse edges
-        canvas.edge(e).traverse().color('pink')
+        # Traverse the edge
+        canvas.edge(e).traverse('pink')
         canvas.pause(0.5)
     
-    # Make the remaining source small again
     canvas.node(source).size('0.8x')
     
     canvas
 
-For our final visualization, let’s find the shortest path on a random graph using Dijkstra’s algorithm.
+For our final visualization, let's find the shortest path on a random graph using Dijkstra's
+algorithm.
 
 .. jupyter-execute::
 
     import random
     random.seed(436)
     
-    canvas = algorithmx.jupyter_canvas(buttons=True)
+    canvas = jupyter_canvas(buttons=True)
     canvas.size((500, 400))
     
-    # Generate random graph with random edge weights
+    # Generate a random graph with random edge weights
     G = nx.newman_watts_strogatz_graph(16, 2, 0.4, seed=537)
     nx.set_edge_attributes(G, {e: randint(1, 20) for e in G.edges}, 'weight')
     
     # Add nodes and edges with weight labels
     canvas.nodes(G.nodes).add()
-    canvas.edges(G.edges).add().label().text(lambda e: G.edges[e]['weight'])
+    canvas.edges(G.edges).add(
+        labels=lambda e: {0: {'text': G.edges[e]['weight']}}
+    )
     canvas.pause(1)
     
-    # Select source and target
+    # Select the source and target
     source = 0
     target = 8
     canvas.node(source).color('green').highlight().size('1.25x')
@@ -101,19 +104,22 @@ For our final visualization, let’s find the shortest path on a random graph us
     for i in range(len(path) - 1):
         u, v = path[i], path[i + 1]
          
-        # Update path length
+        # Update the path length
         path_length += G[u][v]['weight']
         
-        # Traverse edge
-        canvas.edge((u, v)).traverse().color('blue')
+        # Traverse the edge
+        canvas.edge((u, v)).traverse('blue')
         canvas.pause(0.4)
         
-        # Make the next node blue, unless it's the target
+        # Make the next node blue
         if v != target:
             canvas.node(v).color('blue')
         
         # Add a label to indicate current path length
-        canvas.node(v).label('path').add().color('blue').text(path_length)
+        canvas.node(v).label('path').add(
+            color='blue',
+            text=path_length
+        )
         canvas.pause(0.4)
      
     canvas

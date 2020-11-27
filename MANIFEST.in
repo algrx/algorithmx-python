@@ -1,27 +1,13 @@
 include LICENSE.txt
 include README.md
-
-include setupbase.py
-include pytest.ini
-include .coverage.rc
-
-include package.json
-include webpack.config.js
-include algorithmx/labextension/*.tgz
-
+include changelog.md
+include pyproject.toml
+include algorithmx-jupyter.json
 include algorithmx/server/*.html
 
-prune docs
-prune tests
-prune js
-
 graft algorithmx/nbextension
-graft src
-prune **/node_modules
-prune coverage
+graft algorithmx/labextension
+graft algorithmx/server/dist
+graft tests
 
-global-exclude *~
 global-exclude *.pyc
-global-exclude *.pyo
-global-exclude .git
-global-exclude .ipynb_checkpoints

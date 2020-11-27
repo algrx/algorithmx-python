@@ -14,7 +14,7 @@ export const createButton = (iconName: string, onclick: () => void): HTMLDivElem
     button.style.backgroundColor = BUTTON_COLOR;
     button.style.display = 'inline-block';
     button.style.textAlign = 'center';
-    button.style.marginRight = '6px';
+    button.style.marginLeft = '6px';
     button.style.cssFloat = 'left';
 
     button.onmouseover = () => {
@@ -43,7 +43,7 @@ export const createButton = (iconName: string, onclick: () => void): HTMLDivElem
     return button;
 };
 
-export const setIcon = (button: Element, iconName: string): void => {
+export const setButtonIcon = (button: Element, iconName: string): void => {
     const icon = button.querySelector('i');
     if (icon !== null) icon.setAttribute('class', `fa-${iconName} fa`);
 };

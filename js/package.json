@@ -2,9 +2,9 @@
     "name": "algorithmx-jupyter",
     "version": "3.0.0",
     "main": "dist/index.js",
-    "types": "./dist/types/index.d.ts",
+    "types": "dist/types",
     "files": [
-        "dist/*.js*"
+        "dist"
     ],
     "unpkg": "dist/index.js",
     "homepage": "https://github.com/algrx/algorithmx-python",
@@ -25,29 +25,24 @@
         "url": "https://github.com/algrx/algorithmx-python"
     },
     "scripts": {
-        "build:js": "NODE_OPTIONS=--max_old_space_size=2048 npx webpack",
-        "build:labextension": "mkdir -p dist-lab && cd dist-lab && npm pack ..",
-        "inject": "rimraf ../algorithmx/js_dist && rimraf ../algorithmx/labextension && cp -r dist ../algorithmx/js_dist && cp -r dist-lab ../algorithmx/labextension",
-        "build:all": "rimraf dist && npm run build:js && npm run build:labextension && npm run inject",
+        "build:js": "NODE_OPTIONS=--max_old_space_size=2048 npx webpack && mkdir -p build/labextension && cd build/labextension && npm pack ../..",
+        "inject": "rimraf ../algorithmx/server/dist && rimraf ../algorithmx/nbextension && rimraf ../algorithmx/labextension && cp -r build/library ../algorithmx/server/dist && cp -r build/nbextension ../algorithmx/nbextension && cp -r build/labextension ../algorithmx/labextension",
+        "build": "rimraf dist && rimraf build && npm run build:js && npm run inject",
         "watch": "npx webpack --watch",
         "format": "npx prettier --write --ignore-path ../.gitignore .",
         "typecheck": "npx tsc --noEmit"
     },
     "dependencies": {
-        "algorithmx": "^1.1.2",
         "@jupyter-widgets/base": "^3.0.0",
-        "@jupyterlab/application": "^2.0.0",
-        "@jupyterlab/coreutils": "^4.0.0",
-        "@jupyterlab/services": "^5.0.0"
+        "algorithmx": "^2.0.0"
     },
     "devDependencies": {
+        "@jupyterlab/application": "2.2.6",
         "@phosphor/application": "1.7.3",
         "@phosphor/widgets": "1.9.3",
         "@types/node": "14.14.2",
         "@types/webpack-env": "1.15.3",
         "fs-extra": "9.0.1",
-        "mkdirp": "1.0.4",
-        "npm-run-all": "4.1.5",
         "prettier": "2.1.2",
         "pretty-quick": "3.1.0",
         "rimraf": "3.0.2",
@@ -58,6 +53,6 @@
         "webpack-cli": "4.1.0"
     },
     "jupyterlab": {
-        "extension": "dist/lab-extension"
+        "extension": "dist/labextension"
     }
 }

@@ -20,7 +20,7 @@ def dispatch_queue_event(context: QueueContext, queue_event: Mapping):
                     if context.withQ is not None
                     else {}
                 ),
-                "queues": {str(q): queue_event for q in context.ids},
+                "queues": {q: queue_event for q in context.ids},
             }
         )
 
@@ -39,20 +39,20 @@ class QueueSelection:
 
         :param seconds: The duration of the pause, in seconds.
         """
-        dispatch_queue_event(self._selection, {"action": "pause", "duration": seconds})
+        dispatch_queue_event(self._selection, {"pause": seconds})
         return self
 
     def stop(self: S) -> S:
         """Stops the execution of all scheduled events in the queue."""
-        dispatch_queue_event(self._selection, {"action": "stop"})
+        dispatch_queue_event(self._selection, {"stopped": True})
         return self
 
     def start(self: S) -> S:
         """Starts/resumes the execution of all scheduled events in the queue."""
-        dispatch_queue_event(self._selection, {"action": "start"})
+        dispatch_queue_event(self._selection, {"stopped": False})
         return self
 
     def clear(self: S) -> S:
         """Clears all scheduled events in the queue."""
-        dispatch_queue_event(self._selection, {"action": "clear"})
+        dispatch_queue_event(self._selection, {"clear": True})
         return self

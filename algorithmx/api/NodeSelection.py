@@ -1,4 +1,4 @@
-from typing import Union, Tuple, List, TypeVar, Optional, Any
+from typing import Union, Tuple, Iterable, TypeVar, Optional, Any
 from dataclasses import replace
 
 from .ElementSelection import ElementSelection
@@ -10,9 +10,9 @@ S = TypeVar("S", bound="NodeSelection")
 
 
 class NodeSelection(ElementSelection):
-    def remove(self: S, animtype: Optional[ElementArg[str]] = None) -> S:
+    def remove(self: S) -> S:
         """Removes all selected nodes nodes, and any edges connected to the nodes."""
-        return super().remove(animtype)
+        return super().remove()
 
     def label(self, id: ElementId = 0) -> LabelSelection:
         """Selects a single node label by its ID. The node's default 'value label' has
@@ -22,24 +22,24 @@ class NodeSelection(ElementSelection):
         :type id: ElementId
 
         :return: A new selection corresponding to the given labels, with the same data
-        as the current selection.
+            as the current selection.
         """
         return self.labels([id])
 
-    def labels(self, ids: List[ElementId]) -> LabelSelection:
+    def labels(self, ids: Iterable[ElementId]) -> LabelSelection:
         """Selects multiple node labels using a list of ID values. If no list is
         provided, all existing labels will be selected.
 
         :param ids: An list of label IDs.
-        :type ids: List[:data:`api.types.ElementId`]
+        :type ids: Iterable[:data:`api.types.ElementId`]
 
         :return: A new selection corresponding to the given labels, with the same data
-        as the current selection.
+            as the current selection.
         """
         return LabelSelection(
             replace(
                 self._selection,
-                ids=[str(id) for id in ids],
+                ids=[str(l) for l in ids],
                 data=None,  # use the node (parent) data
                 parentkey="labels",
                 parent=self._selection,
@@ -80,7 +80,7 @@ class NodeSelection(ElementSelection):
 
         :param size: A single radius, or a (width/2, height/2) tuple.
         :type size: :data:`~api.types.ElementArg`\\[Union[:data:`~api.types.NumAttr`,
-        Tuple[:data:`~api.types.NumAttr`, :data:`~api.types.NumAttr`]]]
+            Tuple[:data:`~api.types.NumAttr`, :data:`~api.types.NumAttr`]]]
         """
         return self.attrs(size=size)
 

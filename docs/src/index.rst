@@ -13,29 +13,25 @@ Contents
    :titlesonly:
    :caption: Installation and Usage
 
-   installing
+   install
    http-server
    jupyter-widget
 
 .. toctree::
    :maxdepth: 1
-   :caption: Graphics Library
+   :caption: API
 
-   graphics/overview
-   graphics/selections 
-   graphics/utils
+   api/overview
+   api/api 
+   api/networkx
 
 .. toctree::
    :maxdepth: 1
    :caption: Examples
 
-   examples/examples
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Development
-
-   dev-install
+   examples/basic-examples
+   examples/networkx-examples
+   examples/networkx-tutorial
 
 
 .. links

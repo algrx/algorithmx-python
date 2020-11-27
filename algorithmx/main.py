@@ -1,6 +1,11 @@
 from .server import CanvasServer
-from .jupyter import JupyterCanvas
-from .api import Canvas
+
+try:
+    from .jupyter import JupyterCanvas, create_jupyter_canvas
+
+    HAS_JUPYTER = True
+except:
+    HAS_JUPYTER = False
 
 
 def http_server(
@@ -13,14 +18,14 @@ def http_server(
     ``http://localhost:5050/`` (change the port as necessary).
 
     :file: (Optional) The path to the HTML file which the server should display,
-    relative to the current runtime directory. If unspecified, the default HTML file
-    will be used. When creating a custom HTML interface, use the default file as a
-    guide.
+        relative to the current runtime directory. If unspecified, the default HTML file
+        will be used. When creating a custom HTML interface, use the default file as a
+        guide.
     :type file: str
 
     :port: (Optional) The port on which the server should start, defaulting to to 5050.
-    Note that the next port (by default 5051) will also be used to transmit data through
-    WebSockets.
+        Note that the next port (by default 5051) will also be used to transmit data
+        through WebSockets.
     :type port: int
     """
     return CanvasServer(file, host, port)
@@ -33,4 +38,7 @@ def jupyter_canvas(buttons: bool = False) -> JupyterCanvas:
 
     By default, the canvas size is (400, 250), and requires the ``ctrl``/``cmd`` to be
     held down while zooming."""
-    return JupyterCanvas(buttons=buttons)
+    if HAS_JUPYTER:
+        return create_jupyter_canvas(buttons=buttons)
+    else:
+        raise Exception("Jupyter is not installed")

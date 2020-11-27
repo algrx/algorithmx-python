@@ -12,10 +12,9 @@ const name = pkg.name;
 
 const baseDir = path.resolve(__dirname);
 const distDir = path.resolve(__dirname, 'dist');
-const indexFile = path.resolve(baseDir, './src/index.js');
+const buildDir = path.resolve(__dirname, 'build');
 
 const externals = ['@jupyter-widgets/base'];
-
 const publicPath = 'https://unpkg.com/' + name + '@' + version + '/dist/index.js';
 
 const options = {
@@ -30,31 +29,44 @@ const options = {
 
 module.exports = [
     {
-        // main bundle
+        // library bundle (used by the http server frontend)
+        entry: path.resolve(baseDir, './src/library.ts'),
+        output: {
+            filename: 'index.js',
+            path: path.join(buildDir, 'library'),
+            library: 'algorithmx',
+            libraryTarget: 'var',
+        },
+        ...options,
+    },
+    {
+        // jupyter widget bundle
         entry: path.resolve(baseDir, './src/index.ts'),
         output: {
             filename: 'index.js',
             path: distDir,
+            library: "algorithmx-jupyter",
             libraryTarget: 'amd',
             publicPath: publicPath,
         },
         ...options,
     },
     {
-        // jupyter notebook extension
-        entry: path.resolve(baseDir, './src/extension.ts'),
+        // jupyter notebook bundle
+        entry: path.resolve(baseDir, './src/nbextension.ts'),
         output: {
             filename: 'extension.js',
-            path: distDir,
+            path: path.join(buildDir, 'nbextension'),
+            library: "algorithmx-jupyter",
             libraryTarget: 'amd',
         },
         ...options,
     },
     {
-        // jupyter lab extension
-        entry: path.resolve(baseDir, './src/lab-extension.ts'),
+        // jupyter lab imports
+        entry: path.resolve(baseDir, './src/labextension.ts'),
         output: {
-            filename: 'lab-extension.js',
+            filename: 'labextension.js',
             path: distDir,
             libraryTarget: 'amd',
         },

@@ -32,7 +32,7 @@ class LabelSelection(ElementSelection):
         positioned around an element.
 
         :param align: A string describing the alignment, typically in the form
-        "vertical-horizontal". The full list is below:
+            "vertical-horizontal". The full list is below:
 
             "top-left", "top-middle", "top-right", "middle-left", "middle",
             "middle-right", "bottom-left", "bottom-middle", "bottom-right", "radial"

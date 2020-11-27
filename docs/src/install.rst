@@ -12,14 +12,15 @@ Python 3.7.0 or higher is required. Using pip::
 Jupyter Widget
 --------------
 
-In classic Jupyter notebooks, the widget will typically be enabled by default. However, if you installed using pip with notebook version <5.3, you will have to manually enable it by running::
+In classic Jupyter notebooks, the widget will typically be enabled by default. To enable it
+manually, run::
 
-    jupyter nbextension enable --sys-prefix --py algorithmx
+    python -m jupyter nbextension enable --sys-prefix --py algorithmx
 
 with the `appropriate flag`_. To enable in JupyterLab, run::
 
-    jupyter labextension install @jupyter-widgets/jupyterlab-manager
-    jupyter labextension install algorithmx-jupyter
+    python -m jupyter labextension install @jupyter-widgets/jupyterlab-manager --no-build
+    python -m jupyter lab build
 
 .. links
 

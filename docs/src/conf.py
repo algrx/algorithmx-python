@@ -1,5 +1,5 @@
 import sys
-from os.path import dirname, join as pjoin
+from os.path import dirname, join as pjoin, exists as pexists
 import os
 
 # sphinx extensions
@@ -13,11 +13,14 @@ extensions = [
 ]
 
 # add relevant paths
-docs = dirname(dirname(__file__))
-root = dirname(docs)
-sys.path.insert(0, root)
-sys.path.insert(0, pjoin(docs, "sphinxext"))
-sys.path.insert(0, pjoin(docs, "../algorithmx"))
+name = "algorithmx"
+docs_dir = dirname(dirname(__file__))
+base_dir = dirname(docs_dir)
+js_dist_dir = pjoin(base_dir, "js", "dist")
+module_dir = pjoin(docs_dir, "..", name)
+sys.path.insert(0, base_dir)
+sys.path.insert(0, pjoin(docs_dir, "sphinxext"))
+sys.path.insert(0, module_dir)
 
 # sphinx config
 templates_path = ["_templates"]
@@ -27,8 +30,8 @@ language = None
 exclude_patterns = ["**.ipynb_checkpoints"]
 pygments_style = "sphinx"
 todo_include_todos = False
-html_static_path = ["_static"]
-htmlhelp_basename = "algorithmxdoc"
+html_static_path = [pjoin(js_dist_dir)]
+htmlhelp_basename = name + "doc"
 
 # extension config
 nbsphinx_allow_errors = True
@@ -36,16 +39,13 @@ autodoc_member_order = "bysource"
 linkcheck_anchors = False
 
 # project config
-project = "algorithmx"
-copyright = "2019, Alex Socha"
+project = name
+copyright = "2020, Alex Socha"
 author = "Alex Socha"
 
 # project version
-here = dirname(__file__)
-repo = pjoin(here, "..", "..")
-_version_py = pjoin(repo, "algorithmx", "_version.py")
 version_ns = {}
-with open(_version_py) as f:
+with open(pjoin(module_dir, "_version.py")) as f:
     exec(f.read(), version_ns)
 
 version = "%i.%i" % version_ns["version_info"][:2]
@@ -54,18 +54,18 @@ release = version_ns["__version__"]
 # other output formats
 
 latex_documents = [
-    (master_doc, "algorithmx.tex", "algorithmx Documentation", "alexsocha", "manual"),
+    (master_doc, name + ".tex", name + " Documentation", "alexsocha", "manual"),
 ]
 
-man_pages = [(master_doc, "algorithmx", "algorithmx Documentation", [author], 1)]
+man_pages = [(master_doc, name, name + " Documentation", [author], 1)]
 
 texinfo_documents = [
     (
         master_doc,
-        "algorithmx",
-        "algorithmx Documentation",
+        name,
+        name + " Documentation",
         author,
-        "algorithmx",
+        name,
         "A Custom Jupyter Widget Library",
         "Miscellaneous",
     ),
@@ -125,7 +125,7 @@ def setup(app):
     # add js dependencies
     def add_scripts(app):
         for fname in ["index.js"]:
-            if not os.path.exists(os.path.join(here, "_static", fname)):
+            if not pexists(pjoin(js_dist_dir)):
                 print(f"missing javascript file: {fname}")
             app.add_js_file(fname)
 

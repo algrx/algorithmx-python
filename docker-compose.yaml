@@ -1,5 +1,17 @@
 version: '3.7'
 services:
+    build-js:
+        build:
+            context: .
+            target: setup-js
+        volumes:
+            - './js/dist:/app/dist'
+            - './js/build:/app/build'
+        image: algorithmx-build-js
+        command: bash -c "
+            npm run typecheck
+            && npm run build:js"
+
     build:
         build:
             context: .
@@ -7,11 +19,11 @@ services:
         volumes:
             - './dist:/app/dist'
             - './build:/app/build'
-            - './tests:/app/tests'
         image: algorithmx-build
         command: bash -c "
             python -m mypy .
             && python -m pytest tests -vv
+            && rm -rf build/* dist/*
             && python setup.py build sdist bdist_wheel"
 
     docs:
@@ -35,9 +47,7 @@ services:
         volumes:
             - './algorithmx:/app/algorithmx'
             - './examples:/app/examples'
-        command: bash -ci "
-            echo 'Running at localhost:5050'
-            && python -u examples/basic_http_server.py"
+        command: python examples/basic_http_server.py
 
     jupyter-notebook:
         build:
@@ -49,7 +59,9 @@ services:
         volumes:
             - './examples:/app/examples'
         tty: true
-        command: python -m jupyter notebook --allow-root --ip=0.0.0.0 --port=8888
+        command: bash -c "
+            python -m jupyter nbextension list
+            && python -m jupyter notebook --allow-root --ip=0.0.0.0 --port=8888"
 
     jupyter-lab:
         build:
@@ -63,4 +75,4 @@ services:
         tty: true
         command: bash -c "
             python -m jupyter labextension list
-            && python -m jupyter lab --allow-root --ip=0.0.0.0 --port=8888 "
+            && python -m jupyter lab --allow-root --ip=0.0.0.0 --port=8888"

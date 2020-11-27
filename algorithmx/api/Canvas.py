@@ -1,4 +1,4 @@
-from typing import Union, Tuple, Mapping, List, Optional, Callable, TypeVar, Any
+from typing import Union, Tuple, Mapping, Iterable, Optional, Callable, TypeVar, Any
 from dataclasses import dataclass, replace
 
 from .ElementSelection import ElementSelection
@@ -7,43 +7,41 @@ from .EdgeSelection import EdgeSelection, EdgeId, EdgeContext
 from .LabelSelection import LabelSelection
 from .QueueSelection import QueueSelection, QueueContext
 from .types import ElementArg, ElementId, NumAttr, DispatchEvent, ReceiveEvent
-from .utils import ElementContext, eval_element_obj_arg
+from .utils import ElementContext, eval_element_dict
 
 
 S = TypeVar("S", bound="Canvas")
 
 
 class Canvas(ElementSelection):
-    def __init__(self: S, context: Optional[ElementContext] = None):
-        if context is not None:
-            super().__init__(context)
-        else:
-            super().__init__(ElementContext(ids=["canvas"], data=[None]))
+    def __init__(self: S, context: ElementContext):
+        super().__init__(context)
 
     def node(self, id: Union[str, int]) -> NodeSelection:
         """Selects a node by its ID. Use "*" to select all existing nodes.
 
-        :param id: A node ID.
+        :param id: A node ID. Avoid using the "-" character.
         :type id: :data:`api.types.ElementId`
 
         :return: A new selection corresponding to the given node.
         """
         return self.nodes([id])
 
-    def nodes(self, ids: List[ElementId] = ["*"]) -> NodeSelection:
+    def nodes(self, ids: Iterable[ElementId] = ["*"]) -> NodeSelection:
         """Selects multiple nodes using an list of ID values. If no list is provided,
         all existing nodes will be selected.
 
-        :param ids: An iterable container of node IDs, which will be converted to strings.
-        :type ids: List[:data:`api.types.ElementId`]
+        :param ids: A list of node IDs. Avoid using the "-" character.
+        :type ids: Iterable[:data:`api.types.ElementId`]
 
         :return: A new selection corresponding to the given nodes.
         """
+        nodes = list(ids)
         return NodeSelection(
             replace(
                 self._selection,
-                ids=[str(id) for id in ids],
-                data=ids,
+                ids=[str(n) for n in nodes],
+                data=nodes,
                 parentkey="nodes",
                 parent=self._selection,
             )
@@ -60,9 +58,9 @@ class Canvas(ElementSelection):
         When accessing edges using string IDs, e.g. through :meth:`~attrs`, the
         following rules apply:
         * New edges with IDs in the form "source-target(-ID)" will automatically
-          initialize their `source`/`target` attributes.
+        initialize their `source`/`target` attributes.
         * For edges with `directed` set to false, "target-source(-ID)" will fall back to
-          "source-target(-ID)".
+        "source-target(-ID)".
 
         :param edge: A (source, target) or (source, target, ID) tuple.
         :type edge: :data:`~api.EdgeSelection.EdgeId`
@@ -71,7 +69,7 @@ class Canvas(ElementSelection):
         """
         return self.edges([edge])
 
-    def edges(self, ids: List[EdgeId] = None) -> EdgeSelection:
+    def edges(self, ids: Iterable[EdgeId] = None) -> EdgeSelection:
         """Selects multiple edges using a list of (source, target, optional ID) tuples,
         see :meth:`~edge`.
 
@@ -79,24 +77,26 @@ class Canvas(ElementSelection):
 
         :param ids: A list of (source, target) or (source, target, ID) tuples.
             All values will be converted to strings.
-        :type ids: List[:data:`~api.EdgeSelection.EdgeId`]
+        :type ids: Iterable[:data:`~api.EdgeSelection.EdgeId`]
 
         :return: A new selection corresponding to the given edges.
         """
+        edges = list(ids) if ids is not None else None
         return EdgeSelection(
             EdgeContext(
-                tuples=ids,
+                edges=edges,
                 **replace(
                     self._selection,
                     ids=["*"]
-                    if ids is None
+                    if edges is None
                     else [
-                        str(id[0])
+                        str(e[0])
                         + "-"
-                        + str(id[1])
-                        + ("-" + str(id[2]) if len(id) > 2 else "")  # type: ignore
-                        for id in ids
+                        + str(e[1])
+                        + ("-" + str(e[2]) if len(e) > 2 else "")  # type: ignore
+                        for e in edges
                     ],
+                    data=edges if edges is not None else [("*", "*")],
                     parentkey="edges",
                     parent=self._selection,
                 ).__dict__,
@@ -114,19 +114,21 @@ class Canvas(ElementSelection):
         """
         return self.labels([id])
 
-    def labels(self, ids: List[ElementId] = ["*"]) -> LabelSelection:
+    def labels(self, ids: Iterable[ElementId] = ["*"]) -> LabelSelection:
         """Selects multiple canvas labels using a list of ID values. If no list is
         provided, all existing labels will be selected.
 
         :param ids: A list of label IDs.
-        :type ids: List[:data:`api.types.ElementId`]
+        :type ids: Iterable[:data:`api.types.ElementId`]
 
         :return: A new selection corresponding to the given labels.
         """
+        labels = list(ids)
         return LabelSelection(
             replace(
                 self._selection,
-                ids=[str(id) for id in ids],
+                ids=[str(l) for l in labels],
+                data=labels,
                 parentkey="labels",
                 parent=self._selection,
             )
@@ -154,9 +156,9 @@ class Canvas(ElementSelection):
         `<https://github.com/tgdwyer/WebCola/wiki/link-lengths>`_.
 
         :param edgelayout: The edge length calculation strategy:
-        * "individual": Uses each edge's `length` attribute individually.
-        * "jaccard" (default): Dynamic calculation based on :meth:`~edgelength`.
-        * "symmetric": Dynamic calculation based on :meth:`~edgelength`.
+            * "individual": Uses each edge's `length` attribute individually.
+            * "jaccard" (default): Dynamic calculation based on :meth:`~edgelength`.
+            * "symmetric": Dynamic calculation based on :meth:`~edgelength`.
         :type edgelayout: str
         """
         return self.attrs(edgelayout=edgelayout)
@@ -226,15 +228,20 @@ class Canvas(ElementSelection):
         """Selects a single event queue by its ID. The default queue has ID 0. Use "*"
         to select all existing queues.
 
+        By default, any changes made to the queue (e.g. start/stop) will take place
+        immediately. However, if :meth:`~api.ElementSelection.withQ` was previously
+        called, the changes themselves will be added as events onto the current queue.
+
         :param id: A queue ID. Defaults to 0.
 
         :return: A new selection corresponding to the given queue.
         """
         return self.queues([id])
 
-    def queues(self, ids: List[Union[str, int]] = ["*"]) -> QueueSelection:
-        """Selects multiple event queues using an list of ID values. If no list is
-        provided, all existing queues will be selected.
+    def queues(self, ids: Iterable[Union[str, int]] = ["*"]) -> QueueSelection:
+        """Selects multiple event queues using an list of ID values, see :meth:`~queue`.
+
+        If no list is provided, all existing queues will be selected.
 
         :param ids: A list of queue IDs.
 
@@ -242,15 +249,11 @@ class Canvas(ElementSelection):
         """
         return QueueSelection(
             QueueContext(
-                ids=ids,
+                ids=[str(q) for q in ids],
                 withQ=self._selection.withQ,
                 callbacks=self._selection.callbacks,
             )
         )
-
-    def pause(self: S, duration: float) -> S:
-        self.queue().pause(duration)
-        return self
 
     def message(self: S, message: str) -> S:
         """Adds a message to the current event queue. Together with :meth:`~onmessage`,
@@ -258,7 +261,20 @@ class Canvas(ElementSelection):
 
         :param message: A message string.
         """
-        return self.dispatch({message: message})
+        return self.dispatch(
+            {
+                "message": message,
+                **(
+                    {
+                        "withQ": None
+                        if self._selection.withQ == "null"
+                        else self._selection.withQ
+                    }
+                    if self._selection.withQ is not None
+                    else {}
+                ),
+            }
+        )
 
     def onmessage(
         self: S, message: str, fn: Union[Callable[[], Any], Callable[[str], Any]]
@@ -268,13 +284,13 @@ class Canvas(ElementSelection):
 
         :param message: The message to listen for, or "*" to listen for all messages.
         :param fn: A callback function. When using "*", the exact message will be
-        provided as an argument.
+            provided as an argument.
         """
         cbs = self._selection.callbacks
         self._selection = replace(
             self._selection,
             callbacks=(
-                replace(cbs, message=fn)
+                replace(cbs, anymessage=fn)
                 if message == "*"
                 else replace(cbs, messages={**(cbs.messages or {}), message: fn})
             ),
@@ -288,17 +304,19 @@ class Canvas(ElementSelection):
         attributes, see :meth:`~api.ElementSelection.attrs`.
         * message: A message, as sent by :meth:`~message`.
         * withQ: The event queue to which the event will be added, see
-          :meth:`~api.ElementSelection.withQ`.
+        :meth:`~api.ElementSelection.withQ`.
         * queues:
+
             * [id]:
+
                 * stop: True if the queue should be stopped, see
                   :meth:`~api.QueueSelection.stop`.
                 * start: True if the queue should be started, see
-                  :meth:`~api.QueueSelection.start`
+                  :meth:`~api.QueueSelection.start`.
                 * clear: True if all events should be cleared from the queue, see
-                  :meth:`~api.QueueSelection.clear`
+                  :meth:`~api.QueueSelection.clear`.
                 * pause: The number of seconds the queue should be paused for, see
-                  :meth:`~api.QueueSelection.pause`
+                  :meth:`~api.QueueSelection.pause`.
 
         :param event: A partial event object.
         :type event: DispatchEvent
@@ -332,11 +350,11 @@ class Canvas(ElementSelection):
             cbs.receive(event)
 
         # message callbacks
-        if "message" in event is not None:
-            if cbs.message is not None:
-                cbs.message(event["message"])
-            if cbs.messages is not None and event["message"] in cbs.messages:
-                cbs.messages[event["message"]]()
+        if "message" in event and cbs.messages is not None:
+            if "*" in cbs.messages:
+                cbs.messages["*"](event["message"])  # type: ignore
+            if event["message"] in cbs.messages:
+                cbs.messages[event["message"]]()  # type: ignore
 
         # click/hover callbacks
         for element_type in ["nodes"]:
@@ -354,11 +372,15 @@ class Canvas(ElementSelection):
     def onreceive(self: S, fn: Callable[[ReceiveEvent], Any]) -> S:
         """Registers a callback function for all events sent back by the client, in the form:
         * error:
+
            * type: "attribute" (invalid attributes), "unknown".
            * message: The error message.
+
         * message: A message, as sent by :meth:`~message`.
         * nodes:
+
             * [id]:
+
                 * click: True if the node was clicked.
                 * hoverin: True if the mouse hovered over the node.
                 * hoverout: True if the mouse exited the node.
@@ -368,3 +390,7 @@ class Canvas(ElementSelection):
         """
         setattr(self._selection.callbacks, "receive", fn)
         return self
+
+
+def create_canvas(client: Any = None):
+    return Canvas(ElementContext(client=client, ids=["canvas"], data=[None]))
