@@ -5,10 +5,8 @@ T = TypeVar("T")
 ReceiveEvent = Mapping
 DispatchEvent = Mapping
 
-ElementId = Union[str, int]
-"""All element IDs can be provided as a string or a number (which will be converted to a
-string).
-"""
+AnyId = Any
+"""An ID value, which will be converted to a string."""
 
 ElementFn = Union[Callable[[Any], T], Callable[[Any, int], T]]
 """A function taking a selected element's data and index as input.

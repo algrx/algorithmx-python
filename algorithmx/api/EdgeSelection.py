@@ -3,12 +3,12 @@ from dataclasses import dataclass, replace
 
 from .ElementSelection import ElementSelection
 from .LabelSelection import LabelSelection
-from .types import ElementArg, NumAttr, ElementId
+from .types import ElementArg, NumAttr, AnyId
 from .utils import ElementContext, apply_attrs, eval_element_value, eval_element_dict
 
 EdgeId = Union[
-    Tuple[Union[str, int], Union[str, int]],
-    Tuple[Union[str, int], Union[str, int], Union[str, int]],
+    Tuple[AnyId, AnyId],
+    Tuple[AnyId, AnyId, AnyId],
 ]
 
 
@@ -40,8 +40,8 @@ class EdgeSelection(ElementSelection):
             }
             return (
                 {
-                    "source": self._selection.edges[element_index][0],
-                    "target": self._selection.edges[element_index][1],
+                    "source": str(self._selection.edges[element_index][0]),
+                    "target": str(self._selection.edges[element_index][1]),
                     **attr_obj,
                 }
                 if self._selection.edges is not None
@@ -51,7 +51,7 @@ class EdgeSelection(ElementSelection):
         apply_attrs(self._selection, attr_fn)
         return self.duration(0)
 
-    def label(self, id: ElementId = 0) -> LabelSelection:
+    def label(self, id: AnyId = 0) -> LabelSelection:
         """Selects a single edge label by its ID. Use "*" to select all existing labels.
 
         :param id: A label ID. Defaults to 0.
@@ -62,7 +62,7 @@ class EdgeSelection(ElementSelection):
         """
         return self.labels([id])
 
-    def labels(self, ids: Iterable[ElementId]) -> LabelSelection:
+    def labels(self, ids: Iterable[AnyId]) -> LabelSelection:
         """Selects multiple edge labels using a list of ID values. If no list is
         provided, all existing labels will be selected.
 
@@ -133,9 +133,9 @@ class EdgeSelection(ElementSelection):
 
         def attr_fn(data, data_index: int, i: int):
             animsource = (
-                eval_element_value(source, data, data_index)
+                str(eval_element_value(source, data, data_index))
                 if source is not None
-                else self._selection.edges[i][0]
+                else str(self._selection.edges[i][0])
                 if self._selection.edges is not None
                 else None
             )

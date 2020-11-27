@@ -7,7 +7,7 @@ from .utils import EventCallbacks
 @dataclass
 class QueueContext:
     ids: List[Union[str, int]]
-    withQ: Optional[Union[str, int]]
+    withQ: Optional[str]
     callbacks: EventCallbacks
 
 

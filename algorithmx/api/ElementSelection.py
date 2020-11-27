@@ -3,7 +3,7 @@ from dataclasses import dataclass, replace
 from inspect import signature
 
 from .utils import ElementContext, apply_attrs, eval_element_value, eval_element_dict
-from .types import ElementArg, ElementFn
+from .types import ElementArg, ElementFn, AnyId
 
 
 S = TypeVar("S", bound="ElementSelection")
@@ -123,7 +123,7 @@ class ElementSelection:
             }
         )
 
-    def withQ(self: S, queue: Union[str, int, None] = 0) -> S:
+    def withQ(self: S, queue: Union[AnyId, None] = 0) -> S:
         """Sets the event queue to use for all events triggered by the selection. Each
         queue handles events independently, and all queues execute in parallel, which
         enables multiple animations to run simultaneously.
@@ -139,7 +139,7 @@ class ElementSelection:
             queue.
         """
         return self.__class__(
-            replace(self._selection, withQ="null" if queue is None else queue),
+            replace(self._selection, withQ="null" if queue is None else str(queue)),
         )
 
     def duration(self: S, seconds: ElementArg[Union[int, float]]) -> S:

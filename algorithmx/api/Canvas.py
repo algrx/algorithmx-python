@@ -6,7 +6,7 @@ from .NodeSelection import NodeSelection
 from .EdgeSelection import EdgeSelection, EdgeId, EdgeContext
 from .LabelSelection import LabelSelection
 from .QueueSelection import QueueSelection, QueueContext
-from .types import ElementArg, ElementId, NumAttr, DispatchEvent, ReceiveEvent
+from .types import ElementArg, AnyId, NumAttr, DispatchEvent, ReceiveEvent
 from .utils import ElementContext, eval_element_dict
 
 
@@ -17,7 +17,7 @@ class Canvas(ElementSelection):
     def __init__(self: S, context: ElementContext):
         super().__init__(context)
 
-    def node(self, id: Union[str, int]) -> NodeSelection:
+    def node(self, id: AnyId) -> NodeSelection:
         """Selects a node by its ID. Use "*" to select all existing nodes.
 
         :param id: A node ID. Avoid using the "-" character.
@@ -27,7 +27,7 @@ class Canvas(ElementSelection):
         """
         return self.nodes([id])
 
-    def nodes(self, ids: Iterable[ElementId] = ["*"]) -> NodeSelection:
+    def nodes(self, ids: Iterable[AnyId] = ["*"]) -> NodeSelection:
         """Selects multiple nodes using an list of ID values. If no list is provided,
         all existing nodes will be selected.
 
@@ -103,7 +103,7 @@ class Canvas(ElementSelection):
             )
         )
 
-    def label(self, id: ElementId) -> LabelSelection:
+    def label(self, id: AnyId) -> LabelSelection:
         """Selects a single canvas label by its ID. Use "*" to select all existing
         labels.
 
@@ -114,7 +114,7 @@ class Canvas(ElementSelection):
         """
         return self.labels([id])
 
-    def labels(self, ids: Iterable[ElementId] = ["*"]) -> LabelSelection:
+    def labels(self, ids: Iterable[AnyId] = ["*"]) -> LabelSelection:
         """Selects multiple canvas labels using a list of ID values. If no list is
         provided, all existing labels will be selected.
 
@@ -224,7 +224,7 @@ class Canvas(ElementSelection):
         """
         return self.attrs(zoomtoggle=zoomtoggle)
 
-    def queue(self, id: Union[str, int] = 0) -> QueueSelection:
+    def queue(self, id: AnyId = 0) -> QueueSelection:
         """Selects a single event queue by its ID. The default queue has ID 0. Use "*"
         to select all existing queues.
 
@@ -238,7 +238,7 @@ class Canvas(ElementSelection):
         """
         return self.queues([id])
 
-    def queues(self, ids: Iterable[Union[str, int]] = ["*"]) -> QueueSelection:
+    def queues(self, ids: Iterable[AnyId] = ["*"]) -> QueueSelection:
         """Selects multiple event queues using an list of ID values, see :meth:`~queue`.
 
         If no list is provided, all existing queues will be selected.

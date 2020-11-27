@@ -34,7 +34,7 @@
     },
     "dependencies": {
         "@jupyter-widgets/base": "^3.0.0",
-        "algorithmx": "^2.0.0"
+        "algorithmx": "^2.0.1"
     },
     "devDependencies": {
         "@jupyterlab/application": "2.2.6",

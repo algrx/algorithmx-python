@@ -3,7 +3,7 @@ from dataclasses import replace
 
 from .ElementSelection import ElementSelection
 from .LabelSelection import LabelSelection
-from .types import NumAttr, ElementId, ElementArg, ElementFn
+from .types import NumAttr, AnyId, ElementArg, ElementFn
 from .utils import add_element_callback
 
 S = TypeVar("S", bound="NodeSelection")
@@ -14,7 +14,7 @@ class NodeSelection(ElementSelection):
         """Removes all selected nodes nodes, and any edges connected to the nodes."""
         return super().remove()
 
-    def label(self, id: ElementId = 0) -> LabelSelection:
+    def label(self, id: AnyId = 0) -> LabelSelection:
         """Selects a single node label by its ID. The node's default 'value label' has
         ID 0. Use "*" to select all existing labels.
 
@@ -26,7 +26,7 @@ class NodeSelection(ElementSelection):
         """
         return self.labels([id])
 
-    def labels(self, ids: Iterable[ElementId]) -> LabelSelection:
+    def labels(self, ids: Iterable[AnyId]) -> LabelSelection:
         """Selects multiple node labels using a list of ID values. If no list is
         provided, all existing labels will be selected.
 

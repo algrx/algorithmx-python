@@ -24,7 +24,7 @@ class EventCallbacks:
 class ElementContext:
     ids: List[str]
     data: Union[List[Any], None] = None
-    withQ: Optional[Union[str, int]] = None
+    withQ: Optional[str] = None
     animation: Optional[Mapping] = None
 
     parentkey: str = ""
