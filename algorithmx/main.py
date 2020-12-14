@@ -6,6 +6,7 @@ try:
     HAS_JUPYTER = True
 except:
     HAS_JUPYTER = False
+    JupyterCanvas = None  # type: ignore
 
 
 def http_server(
