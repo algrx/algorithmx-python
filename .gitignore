@@ -20,6 +20,7 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 node_modules/
+pip-wheel-metadata/
 
 docs/jupyter_execute/
 algorithmx/nbextension/
