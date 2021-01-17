@@ -15,7 +15,7 @@ server, or as a widget in Jupyter Notebooks and JupyterLab.
 ## Resources
 
 - <a href="https://algrx.github.io/">Website</a>
-- <a href="https://algrx.github.io/algorithmx/docs/python/">Documentation</a>
+- <a href="https://algrx.github.io/docs/python/">Documentation</a>
 
 ## Installation
 
