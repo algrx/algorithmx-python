@@ -12,7 +12,7 @@ jobs:
               run: docker-compose up --build build
 
             - name: Build docs
-              run: docker-compose up --build docs
+              run: docker-compose up --build build-docs
 
             - name: Try building Jupyter lab
               run: docker-compose build jupyter-lab
