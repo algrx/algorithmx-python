@@ -21,6 +21,18 @@ jobs:
               if: github.ref == 'refs/heads/master'
               shell: bash
               env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  DEPLOY_GITHUB_TOKEN: ${{ secrets.DEPLOY_GITHUB_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.DEPLOY_GITHUB_TOKEN }}
               run: ./scripts/deploy-docs.sh
+
+            - name: Deploy to NPM
+              if: startsWith(github.ref, 'refs/tags/v')
+              uses: JS-DevTools/npm-publish@v1
+              with:
+                  package: ./js/package.json
+                  token: ${{ secrets.NPM_TOKEN }}
+
+            - name: Deploy to PyPI
+              if: startsWith(github.ref, 'refs/tags/v')
+              uses: pypa/gh-action-pypi-publish@master
+              with:
+                  password: ${{ secrets.PYPI_API_TOKEN }}

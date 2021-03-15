@@ -1,17 +1,5 @@
 version: '3.7'
 services:
-    build-js:
-        build:
-            context: .
-            target: setup-js
-        volumes:
-            - './js/dist:/app/dist'
-            - './js/build:/app/build'
-        image: algorithmx-build-js
-        command: bash -c "
-            npm run typecheck
-            && npm run build:js"
-
     build:
         build:
             context: .
@@ -19,18 +7,22 @@ services:
         volumes:
             - './dist:/app/dist'
             - './build:/app/build'
+            - './js/dist:/app/js-copy-dist'
+            - './js/build:/app/js-copy-build'
         image: algorithmx-build
         command: bash -c "
             python -m mypy .
             && python -m pytest tests -vv
             && rm -rf build/* dist/*
-            && python setup.py build sdist bdist_wheel"
+            && python setup.py build sdist bdist_wheel
+            && cp -r /app/js/dist/* /app/js-copy-dist/
+            && cp -r /app/js/build/* /app/js-copy-build/"
 
-    docs:
+    build-docs:
         build:
             context: .
             target: prepare-build
-        image: algorithmx-docs
+        image: algorithmx-build-docs
         volumes:
             - './docs/build:/app/docs/build'
             - './docs/cache:/app/docs/cache'

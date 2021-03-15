@@ -1,13 +1,11 @@
 # === build js ===
-FROM node:14 as setup-js
+FROM node:14 as build-js
 WORKDIR /app
 
 COPY ./js/src ./src
 COPY ./js/tsconfig.json ./js/webpack.config.js ./js/package*.json ./
 
 RUN npm ci
-
-FROM setup-js as build-js
 WORKDIR /app
 RUN npm run build:js
 
@@ -27,6 +25,7 @@ RUN python -m pip install --upgrade pip
 
 # copy built js
 COPY --from=build-js /app/dist ./js/dist
+COPY --from=build-js /app/build ./js/build
 COPY --from=build-js /app/build/library ./algorithmx/server/dist
 COPY --from=build-js /app/build/nbextension ./algorithmx/nbextension
 COPY --from=build-js /app/build/labextension ./algorithmx/labextension

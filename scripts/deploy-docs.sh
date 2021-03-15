@@ -1,5 +1,5 @@
 # clone and merge
-git clone "https://${DEPLOY_GITHUB_TOKEN}@github.com/algrx/algrx.github.io.git" website
+git clone "https://${GITHUB_TOKEN}@github.com/algrx/algrx.github.io.git" website
 mkdir -p website/docs && rm -rf website/docs/python
 cp -r docs/build website/docs/python
 cd website
